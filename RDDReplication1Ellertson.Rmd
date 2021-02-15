@@ -4,7 +4,7 @@ author: "Megan Ellertson"
 date: "2/14/2021"
 output: html_document
 ---
-```{r library set up echo = FALSE}
+```{r library set up}
 library(readr)
 library(tidyverse)
 library(ggplot2)
@@ -17,6 +17,8 @@ library(cobalt)
 library(haven)
 library(estimatr)
 library(rdrobust)
+library(rddensity)
+
 ```
 
 Question 1
@@ -61,19 +63,18 @@ summary(rdr)
 ```
 
 Finally, the recreated Figure 1 from the Hansen paper is an additional check for this type of sorting or bunching around the treatment.  
-```{r BAC Histogram}
-figure1<-ggplot(RDDdata, aes(x=bac1))+
-  geom_histogram(aes(y=..density..), colour = "grey", fill = "white", binwidth = 0.001)
+
+
+```{r}
+figure1 <- ggplot(RDDdata, aes(bac1)) +
+  geom_histogram(binwidth = 0.001, color = "grey", fill = "white") 
 figure1 + geom_vline(aes(xintercept = 0.08), color = "black", size = 1) +
   geom_vline(aes(xintercept = 0.15), color = "black", size = 1) +
   labs(title = "BAC Histogram", x = "bac1", y = "Frequency")
 ```
-From all three of these options, it is clear that the data does not present any form of manipulation. In the first example, the McCrary Density test outputted a p-value extremely low and statistically significant indicating that there is no evidence of this manipulation.  We want to ensure that the treatment effect is the only change which is occurring, that is randomly assigned, not chosen by individuals. CONTINUE
 
+From all three of these options, it is clear that the data does not present any form of manipulation. In the first example, the McCrary Density test outputted a p-value extremely low and statistically significant indicating that there is no evidence of this manipulation.  We want to ensure that the treatment effect is the only change which is occurring, that is randomly assigned, not chosen by individuals. CONTINUE
 ```{r}
-library(tidyverse)
-library(rddensity)
-library(rdd)
 
 DCdensity(RDDdata$bac1, cutpoint = 0.08)
 
@@ -127,6 +128,7 @@ summary(lm_6)
 
 
 Question 8
+
 
 Question 9
 
