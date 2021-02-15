@@ -37,7 +37,13 @@ RDDdata <- mutate(raw_hansen_dwi, cutoff = car::Recode(bac1, "lo: 0.08= 0; else 
 head(RDDdata)
 ``` 
 Question 4 
-To check to see if there is evidence for manipulation or sorting on the running variable "bac1" we want to examine the behavior of the around the cutoffs of interest.  We want to assess to see if there is any ability of the individuals in the data set to control if they are at the 0.08 or at DUI level. We would assume that this would not necessarily be possible given it is difficult to determine while drinking your level of BAC and many individuals have difficulty controlling their alcohol consumption. However, we must examine the data through the density functions created by Hansen or through the McCrary Density test.  There are a few options of replicating this below.  
+To check to see if there is evidence for manipulation or sorting on the running variable "bac1" we want to examine the behavior of the around the cutoffs of interest.  We want to assess to see if there is any ability of the individuals in the data set to control if they are at the 0.08 or at DUI level. We would assume that this would not necessarily be possible given it is difficult to determine while drinking your level of BAC and many individuals have difficulty controlling their alcohol consumption. However, we must examine the data through the density functions created by Hansen or through the McCrary Density test.  There are a few options of replicating this below.
+First it is important to examine the summary statistics to understand what the data is that you are examining. 
+
+```{r}
+stargazer(RDDdata)
+```
+
 The following is the McCrary Density Test utilizing the rddensity library. 
 ```{r McCrary 1}
 DCdensity(RDDdata$bac1,0.08,plot=TRUE)
@@ -76,7 +82,16 @@ rdplotdensity(density, RDDdata$bac1)
 ```
 
 
-Question 5
+Question 5 potential option 
+```{r}
+RDDdataQ5 <- RDDdata %>% 
+  filter(bac1>=0.08)
+
+table1A = lm(bac1 ~ white + male + aged + acc, data = RDDdataQ5)
+table1A
+
+```
+
 
 Question 6
 
