@@ -5,6 +5,8 @@ date: "2/14/2021"
 output:
   pdf_document: default
   html_document: default
+editor_options: 
+  chunk_output_type: inline
 ---
 
 ```{r setup, include=FALSE}
@@ -63,6 +65,7 @@ print(DCdensity(RDDdata$bac1, 0.08, plot = FALSE))
 
 ```
 
+
 Additionally, the rdrobust library possesses the capability for creating this measure as follows:
 
 Finally, the recreated Figure 1 from the Hansen paper is an additional check for this type of sorting or bunching around the treatment.  
@@ -87,7 +90,7 @@ rdplotdensity(density, RDDdata$bac1)
 
 
 Question 5 potential option 
-```{r}
+```{r} 
 RDDdata5 <- RDDdata %>%
   filter(bac1 >= 0.08)
 reg1 <- lm_robust(recidivism ~ male, data = RDDdata5)
@@ -106,6 +109,15 @@ texreg::screenreg(list(reg1, reg2, reg3, reg4), type="text")
 
 
 Question 6
+```{r echo = FALSE}
+cli::cli_text("testing")
+ggplot(data = RDDdata) +
+geom_point(alpha = 0.5) +
+geom_vline(xintercept = 0.8, color = "black", linetype = 1)+
+
+
+```
+
 
 Question 7
 ```{r}
