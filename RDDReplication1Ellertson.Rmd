@@ -4,6 +4,11 @@ author: "Megan Ellertson"
 date: "2/14/2021"
 output: html_document
 ---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
 ```{r library set up}
 library(readr)
 library(tidyverse)
@@ -13,7 +18,6 @@ library(stargazer)
 library(dplyr)
 library(tidyr)
 library(rdd)
-library(cobalt)
 library(haven)
 library(estimatr)
 library(rdrobust)
@@ -23,7 +27,7 @@ library(rddensity)
 
 Question 1
 The data being used is pulled downloaded and installed from the local directory under "Data" labeled repository: "Ellertson RDD". This "RDD" is already an existing repository, therefore this assignment utilized a new repository with a slightly more specific title. The first item completed is the importing of the data being used. 
-```{r data upload echo = TRUE}
+```{r }
 
 raw_hansen_dwi <- read_csv("Data/hansen_dwi.csv")
 
@@ -55,12 +59,6 @@ print(DCdensity(RDDdata$bac1, 0.08, plot = FALSE))
 ```
 
 Additionally, the rdrobust library possesses the capability for creating this measure as follows:
-```{r}
-rdr <- rdrobust(y = RDDdata$recidivism,
-                x = RDDdata$bac1, c = 0.08)
-summary(rdr)
-
-```
 
 Finally, the recreated Figure 1 from the Hansen paper is an additional check for this type of sorting or bunching around the treatment.  
 
@@ -85,11 +83,15 @@ rdplotdensity(density, RDDdata$bac1)
 
 Question 5 potential option 
 ```{r}
-RDDdataQ5 <- RDDdata %>% 
-  filter(bac1>=0.08)
+RDDdata5 <- RDDdata %>%
+  filter(bac1 >= 0.08)
+reg1 <- lm_robust(recidivism ~ male, data = RDDdata5)
+reg2 <- lm_robust(recidivism ~ aged, data = RDDdata5)
+reg3 <- lm_robust(recidivism ~ acc, data = RDDdata5)
+reg4 <- lm_robust(recidivism ~ white, data = RDDdata5)
 
-table1A = lm(bac1 ~ white + male + aged + acc, data = RDDdataQ5)
-table1A
+cli::cli_text("Table 2: Regression Discontinuity Estimates for the Effect of Exceeding BAC Thresholds on Predetermined Characteristics")
+texreg::screenreg(list(reg1, reg2, reg3, reg4), type="text")
 
 ```
 
@@ -98,6 +100,7 @@ Question 6
 
 Question 7
 ```{r}
+
 RDDdata_subset1 <- RDDdata %>% 
   filter(bac1>0.03 & bac1 < 0.13)
 
@@ -124,6 +127,10 @@ lm_6 <- lm_robust(recidivism ~ bac1*cutoff + bac1sq*cutoff, data = RDDdata_subse
 summary(lm_4)
 summary(lm_5)
 summary(lm_6)
+
+cli::cli_text("Table 3")
+texreg::screenreg(list(lm_1, lm_2, lm_3, lm_4, lm_5, lm_6), type="text")
+
 ```
 
 
