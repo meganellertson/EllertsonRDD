@@ -2,7 +2,9 @@
 title: "RDD Replication 1"
 author: "Megan Ellertson"
 date: "2/14/2021"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -43,15 +45,18 @@ RDDdata <- mutate(raw_hansen_dwi, cutoff = car::Recode(bac1, "lo: 0.08= 0; else 
 head(RDDdata)
 ``` 
 Question 4 
-To check to see if there is evidence for manipulation or sorting on the running variable "bac1" we want to examine the behavior of the around the cutoffs of interest.  We want to assess to see if there is any ability of the individuals in the data set to control if they are at the 0.08 or at DUI level. We would assume that this would not necessarily be possible given it is difficult to determine while drinking your level of BAC and many individuals have difficulty controlling their alcohol consumption. However, we must examine the data through the density functions created by Hansen or through the McCrary Density test.  There are a few options of replicating this below.
+To check to see if there is evidence for manipulation or sorting on the running variable "bac1" we want to examine the behavior of the data around the cutoffs of interest.  We want to assess to see if there is any ability of the individuals in the data set to control if they are at the 0.08 BAC or at DUI level. We want to ensure that there is no ability for the participants to "choose" the treatment. We would assume that this would not necessarily be possible given it is difficult to determine while drinking your level of BAC and many individuals have difficulty controlling their alcohol consumption. However, we must examine the data through the density functions created by Hansen or through the McCrary Density test.  There are a few options of replicating this below.
 First it is important to examine the summary statistics to understand what the data is that you are examining. 
 
-```{r}
-stargazer(RDDdata)
+```{r mylatextable, results = "asis"}
+stargazer(RDDdata, type = 'latex')
+
+```
+
 ```
 
 The following is the McCrary Density Test utilizing the rddensity library. 
-```{r McCrary 1}
+```{r}
 DCdensity(RDDdata$bac1,0.08,plot=TRUE)
 
 print(DCdensity(RDDdata$bac1, 0.08, plot = FALSE))
@@ -89,6 +94,10 @@ reg1 <- lm_robust(recidivism ~ male, data = RDDdata5)
 reg2 <- lm_robust(recidivism ~ aged, data = RDDdata5)
 reg3 <- lm_robust(recidivism ~ acc, data = RDDdata5)
 reg4 <- lm_robust(recidivism ~ white, data = RDDdata5)
+
+stargazer(reg1, reg2, reg3, reg4, title="Table 2 - Regression Discontinuity Estimates for the Effect of Exceeding BAC Thresholds on Predetermined Characteristics", align = TRUE, dep.var.labels =c("male", "age", "acc", "white"), no.space=TRUE)
+
+or
 
 cli::cli_text("Table 2: Regression Discontinuity Estimates for the Effect of Exceeding BAC Thresholds on Predetermined Characteristics")
 texreg::screenreg(list(reg1, reg2, reg3, reg4), type="text")
