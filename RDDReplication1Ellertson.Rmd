@@ -25,6 +25,7 @@ library(haven)
 library(estimatr)
 library(rdrobust)
 library(rddensity)
+library(cli)
 
 ```
 
@@ -53,6 +54,7 @@ demmeans <- split(RDDdata$recidivism, cut(RDDdata$bac1, 100)) %>%
 agg_RDDdata <- data.frame(recidivism = demmeans, bac1 = seq(0.01, 0.5, by = 0.01))
 plottingdata <- RDDdata %>%
   mutate(gg_group = case_when(bac1>= 0.08 ~ 1, TRUE ~ 0))
+
 ggplot(plottingdata, aes(bac1, recidivism)) +
   geom_point(aes(x=bac1, y = recidivism), data = agg_RDDdata) +
   stat_smooth(aes(bac1, recidivism, group = gg_group), method = "lm",formula = y ~ x + I(x^2)) +
@@ -75,19 +77,6 @@ stargazer(RDDdata, type = 'latex')
 ```
 
 
-The following is the McCrary Density Test utilizing the rddensity library. 
-```{r}
-DCdensity(RDDdata$bac1,0.08,plot=TRUE)
-
-print(DCdensity(RDDdata$bac1, 0.08, plot = FALSE))
-
-```
-
-
-Additionally, the rdrobust library possesses the capability for creating this measure as follows:
-
-Finally, the recreated Figure 1 from the Hansen paper is an additional check for this type of sorting or bunching around the treatment.  
-
 
 ```{r}
 figure1 <- ggplot(RDDdata, aes(bac1)) +
@@ -107,8 +96,7 @@ density <- rddensity(RDDdata$bac1, c = 0.08)
 rdplotdensity(density, RDDdata$bac1)
 ```
 
-
-Question 5 potential option 
+Question 5 potential option thismay need to be bac1 ~ the covariates?
 ```{r} 
 RDDdata5 <- RDDdata %>%
   filter(bac1 >= 0.08)
@@ -117,12 +105,19 @@ reg2 <- lm_robust(recidivism ~ aged, data = RDDdata5)
 reg3 <- lm_robust(recidivism ~ acc, data = RDDdata5)
 reg4 <- lm_robust(recidivism ~ white, data = RDDdata5)
 
+malechar <- lm_robust(cutoff ~ bac1 + male, data = RDDdata)
+summary(malechar)
+agechar <- lm_robust(cutoff ~ bac1 + aged, data = RDDdata)
+summary(agechar) 
+accchar <- lm-robust(cutoff ~ bac1 + )
+
 stargazer(reg1, reg2, reg3, reg4, title="Table 2 - Regression Discontinuity Estimates for the Effect of Exceeding BAC Thresholds on Predetermined Characteristics", align = TRUE, dep.var.labels =c("male", "age", "acc", "white"), no.space=TRUE)
 
 or
 
 cli::cli_text("Table 2: Regression Discontinuity Estimates for the Effect of Exceeding BAC Thresholds on Predetermined Characteristics")
 texreg::screenreg(list(reg1, reg2, reg3, reg4), type="text")
+
 
 ```
 
