@@ -46,26 +46,6 @@ Question 3
 RDDdata <- mutate(raw_hansen_dwi, cutoff = car::Recode(bac1, "lo: 0.08= 0; else = 1"))
 head(RDDdata)
 
-
-categories <- RDDdata$bac1 
-demmeans <- split(RDDdata$recidivism, cut(RDDdata$bac1, 100)) %>%
-  lapply(mean) %>%
-  unlist()
-agg_RDDdata <- data.frame(recidivism = demmeans, bac1 = seq(0.01, 0.5, by = 0.01))
-plottingdata <- RDDdata %>%
-  mutate(gg_group = case_when(bac1>= 0.08 ~ 1, TRUE ~ 0))
-
-ggplot(plottingdata, aes(bac1, recidivism)) +
-  geom_point(aes(x=bac1, y = recidivism), data = agg_RDDdata) +
-  stat_smooth(aes(bac1, recidivism, group = gg_group), method = "lm",formula = y ~ x + I(x^2)) +
-  xlim(0,0.2) + ylim(0,.25) +
-  geom_vline(xintercept = 0.08)
-
-ggplot(plottingdata, aes(bac1, recidivism)) +
-  geom_point(aes(x=bac1, y = recidivism), data = agg_RDDdata) +
-  stat_smooth(aes(bac1, recidivism, group = gg_group), method = "lm") +
-  geom_vline(xintercept = 0.08)
-  
 ``` 
 Question 4 
 To check to see if there is evidence for manipulation or sorting on the running variable "bac1" we want to examine the behavior of the data around the cutoffs of interest.  We want to assess to see if there is any ability of the individuals in the data set to control if they are at the 0.08 BAC or at DUI level. We want to ensure that there is no ability for the participants to "choose" the treatment. We would assume that this would not necessarily be possible given it is difficult to determine while drinking your level of BAC and many individuals have difficulty controlling their alcohol consumption. However, we must examine the data through the density functions created by Hansen or through the McCrary Density test.  There are a few options of replicating this below.
@@ -104,12 +84,26 @@ reg1 <- lm_robust(recidivism ~ male, data = RDDdata5)
 reg2 <- lm_robust(recidivism ~ aged, data = RDDdata5)
 reg3 <- lm_robust(recidivism ~ acc, data = RDDdata5)
 reg4 <- lm_robust(recidivism ~ white, data = RDDdata5)
+ ## this option is probably not right 
 
-malechar <- lm_robust(cutoff ~ bac1 + male, data = RDDdata)
+malechar = lm_robust(cutoff ~ bac1 + male, data = RDDdata)
 summary(malechar)
-agechar <- lm_robust(cutoff ~ bac1 + aged, data = RDDdata)
+agechar = lm_robust(cutoff ~ bac1 + aged, data = RDDdata)
 summary(agechar) 
-accchar <- lm-robust(cutoff ~ bac1 + )
+accchar = lm_robust(cutoff ~ bac1 + acc, data = RDDdata)
+summary(accchar)
+whitechar = lm_robust(cutoff ~ bac1+ white, data = RDDdata)
+summary(whitechar)
+
+or 
+
+#additional option 
+option = lm_robust(recidivism ~ white + aged + acc + male + cutoff + bac1 + bac1*cutoff, data = RDDdata)
+summary(option)
+
+#another option still need to plug into items
+
+
 
 stargazer(reg1, reg2, reg3, reg4, title="Table 2 - Regression Discontinuity Estimates for the Effect of Exceeding BAC Thresholds on Predetermined Characteristics", align = TRUE, dep.var.labels =c("male", "age", "acc", "white"), no.space=TRUE)
 
@@ -135,7 +129,7 @@ geom_vline(xintercept = 0.8, color = "black", linetype = 1)+
 
 Question 7
 ```{r}
-
+## Panel A
 RDDdata_subset1 <- RDDdata %>% 
   filter(bac1>0.03 & bac1 < 0.13)
 
@@ -171,8 +165,25 @@ texreg::screenreg(list(lm_1, lm_2, lm_3, lm_4, lm_5, lm_6), type="text")
 
 Question 8
 ```{r}
+categories <- RDDdata$bac1 
+demmeans <- split(RDDdata$recidivism, cut(RDDdata$bac1, 100)) %>%
+  lapply(mean) %>%
+  unlist()
+agg_RDDdata <- data.frame(recidivism = demmeans, bac1 = seq(0.01, 0.5, by = 0.01))
+plottingdata <- RDDdata %>%
+  mutate(gg_group = case_when(bac1>= 0.08 ~ 1, TRUE ~ 0))
 
+ggplot(plottingdata, aes(bac1, recidivism)) +
+  geom_point(aes(x=bac1, y = recidivism), data = agg_RDDdata) + xlim(0, 0.2) + ylim(0.08, 0.16) +
+  stat_smooth(aes(bac1, recidivism, group = gg_group), method = "lm", formula = y ~ x + I(x^2)) +
+  xlim(0,0.2) + ylim(0,.25) +
+  geom_vline(xintercept = 0.08)
 
+ggplot(plottingdata, aes(bac1, recidivism)) +
+  geom_point(aes(x=bac1, y = recidivism), data = agg_RDDdata) +
+  stat_smooth(aes(bac1, recidivism, group = gg_group), method = "lm") +
+  geom_vline(xintercept = 0.08)
+  
 ```
 
 
