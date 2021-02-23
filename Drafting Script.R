@@ -96,7 +96,46 @@ plot(malefitted ~ bac1, data = RDDdata, ylim = range(0.74, 0.82))
 Table3C1 = lm(recidivism ~ cutoff + bac1 + male + aged + white + acc + bac1*cutoff, data = RDDdata)
 summary(Table3C1)
 
+# OPTION FOR 5 AND 7 
 RDestimate(bac1 ~ male, data = RDDdata)
-RDestimate(bac1~male, data = RDDdata, subset = NULL, cutpoint = NULL, bw = 0.002,
-           kernel = "triangular", se.type = "HC1", cluster = NULL,
-           verbose = FALSE, model = FALSE, frame = FALSE)
+RDestimate(bac1 ~ male|
+             
+             
+             
+RDestimate(bac1 ~ male | aged + acc + white + cutoff + bac1*cutoff, cutpoint = 0.08, bw = 0.05, kernel = "rectangular" )
+
+
+
+RDDdata5 <- RDDdata %>%
+  filter(bac1 >= 0.08)
+reg1 <- lm_robust(recidivism ~ male, data = RDDdata5)
+reg2 <- lm_robust(recidivism ~ aged, data = RDDdata5)
+reg3 <- lm_robust(recidivism ~ acc, data = RDDdata5)
+reg4 <- lm_robust(recidivism ~ white, data = RDDdata5)
+## this option is probably not right 
+
+malechar = lm_robust(cutoff ~ bac1 + male, data = RDDdata)
+summary(malechar)
+agechar = lm_robust(cutoff ~ bac1 + aged, data = RDDdata)
+summary(agechar) 
+accchar = lm_robust(cutoff ~ bac1 + acc, data = RDDdata)
+summary(accchar)
+whitechar = lm_robust(cutoff ~ bac1+ white, data = RDDdata)
+summary(whitechar)
+
+or 
+
+#additional option 
+option = lm_robust(recidivism ~ white + aged + acc + male + cutoff + bac1 + bac1*cutoff, data = RDDdata)
+summary(option)
+
+#another option still need to plug into items
+
+
+
+stargazer(reg1, reg2, reg3, reg4, title="Table 2 - Regression Discontinuity Estimates for the Effect of Exceeding BAC Thresholds on Predetermined Characteristics", align = TRUE, dep.var.labels =c("male", "age", "acc", "white"), no.space=TRUE)
+
+or
+
+cli::cli_text("Table 2: Regression Discontinuity Estimates for the Effect of Exceeding BAC Thresholds on Predetermined Characteristics")
+texreg::screenreg(list(reg1, reg2, reg3, reg4), type="text")

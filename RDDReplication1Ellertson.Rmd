@@ -30,7 +30,7 @@ library(cli)
 ```
 
 Question 1
-The data being used is pulled downloaded and installed from the local directory under "Data" labeled repository: "Ellertson RDD". This "RDD" is already an existing repository, therefore this assignment utilized a new repository with a slightly more specific title. The first item completed is the importing of the data being used. 
+
 ```{r }
 
 raw_hansen_dwi <- read_csv("Data/hansen_dwi.csv")
@@ -41,15 +41,13 @@ Question 2
 **Summary**
 
 Question 3
-"Cutoff" is the label for the new binary variable generated around the 0.08 BAC level. 
+
 ```{r dummy variable creation}
 RDDdata <- mutate(raw_hansen_dwi, cutoff = car::Recode(bac1, "lo: 0.08= 0; else = 1"))
 head(RDDdata)
 
 ``` 
 Question 4 
-To check to see if there is evidence for manipulation or sorting on the running variable "bac1" we want to examine the behavior of the data around the cutoffs of interest.  We want to assess to see if there is any ability of the individuals in the data set to control if they are at the 0.08 BAC or at DUI level. We want to ensure that there is no ability for the participants to "choose" the treatment. We would assume that this would not necessarily be possible given it is difficult to determine while drinking your level of BAC and many individuals have difficulty controlling their alcohol consumption. However, we must examine the data through the density functions created by Hansen or through the McCrary Density test.  There are a few options of replicating this below.
-First it is important to examine the summary statistics to understand what the data is that you are examining. 
 
 ```{r mylatextable, results = "asis"}
 stargazer(RDDdata, type = 'latex')
@@ -66,8 +64,6 @@ figure1 + geom_vline(aes(xintercept = 0.08), color = "black", size = 1) +
   labs(title = "BAC Histogram", x = "bac1", y = "Frequency")
 ```
 
-
-From all three of these options, it is clear that the data does not present any form of manipulation. In the first example, the McCrary Density test outputted a p-value extremely low and statistically significant indicating that there is no evidence of this manipulation.  We want to ensure that the treatment effect is the only change which is occurring, that is randomly assigned, not chosen by individuals. CONTINUE
 ```{r}
 
 DCdensity(RDDdata$bac1, cutpoint = 0.08)
@@ -76,41 +72,20 @@ density <- rddensity(RDDdata$bac1, c = 0.08)
 rdplotdensity(density, RDDdata$bac1)
 ```
 
-Question 5 potential option thismay need to be bac1 ~ the covariates?
+Question 5 
 ```{r} 
-RDDdata5 <- RDDdata %>%
-  filter(bac1 >= 0.08)
-reg1 <- lm_robust(recidivism ~ male, data = RDDdata5)
-reg2 <- lm_robust(recidivism ~ aged, data = RDDdata5)
-reg3 <- lm_robust(recidivism ~ acc, data = RDDdata5)
-reg4 <- lm_robust(recidivism ~ white, data = RDDdata5)
- ## this option is probably not right 
-
-malechar = lm_robust(cutoff ~ bac1 + male, data = RDDdata)
-summary(malechar)
-agechar = lm_robust(cutoff ~ bac1 + aged, data = RDDdata)
-summary(agechar) 
-accchar = lm_robust(cutoff ~ bac1 + acc, data = RDDdata)
-summary(accchar)
-whitechar = lm_robust(cutoff ~ bac1+ white, data = RDDdata)
-summary(whitechar)
-
-or 
-
-#additional option 
-option = lm_robust(recidivism ~ white + aged + acc + male + cutoff + bac1 + bac1*cutoff, data = RDDdata)
-summary(option)
-
-#another option still need to plug into items
+## THIS IS THE RIGHT ONE. 
+malecov <- RDestimate(formula = male ~ bac1 | aged + acc + white + cutoff + bac1*cutoff, data = RDDdata, cutpoint = 0.08, bw = 0.05, kernel = "rectangular")
 
 
+agecov <- RDestimate(formula = aged ~ bac1 | male + acc + white + cutoff + bac1*cutoff, data = RDDdata, cutpoint = 0.08, bw = 0.05, kernel = "rectangular")
 
-stargazer(reg1, reg2, reg3, reg4, title="Table 2 - Regression Discontinuity Estimates for the Effect of Exceeding BAC Thresholds on Predetermined Characteristics", align = TRUE, dep.var.labels =c("male", "age", "acc", "white"), no.space=TRUE)
 
-or
+acccov <- RDestimate(formula = acc ~ bac1 | aged + male + white + cutoff + bac1*cutoff, data = RDDdata, cutpoint = 0.08, bw = 0.05, kernel = "rectangular")
 
-cli::cli_text("Table 2: Regression Discontinuity Estimates for the Effect of Exceeding BAC Thresholds on Predetermined Characteristics")
-texreg::screenreg(list(reg1, reg2, reg3, reg4), type="text")
+whitecov <- RDestimate(formula = white ~ bac1 | aged + male + acc + cutoff + bac1*cutoff, data = RDDdata, cutpoint = 0.08, bw = 0.05, kernel = "rectangular")
+
+data.frame(male = malecov$est[1], age = agecov$est[1], accident = acccov$est[1], white = whitecov$est[1])
 
 
 ```
@@ -130,6 +105,8 @@ geom_vline(xintercept = 0.8, color = "black", linetype = 1)+
 Question 7
 ```{r}
 ## Panel A
+
+
 RDDdata_subset1 <- RDDdata %>% 
   filter(bac1>0.03 & bac1 < 0.13)
 
