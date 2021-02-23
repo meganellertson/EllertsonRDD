@@ -139,3 +139,13 @@ or
 
 cli::cli_text("Table 2: Regression Discontinuity Estimates for the Effect of Exceeding BAC Thresholds on Predetermined Characteristics")
 texreg::screenreg(list(reg1, reg2, reg3, reg4), type="text")
+
+lm_1 <- lm_robust(recidivism ~ bac1, data = RDDdata_subset1)
+lm_2 <- lm_robust(recidivism ~ bac1*cutoff, data = RDDdata_subset1)
+RDDdata_subset1a <- RDDdata_subset1 %>%
+  mutate(bac1sq = bac1^2)
+lm_3 <- lm_robust(recidivism ~ bac1*cutoff + bac1sq*cutoff, data = RDDdata_subset1a)
+
+summary(lm_1)
+summary(lm_2)
+summary(lm_3)
