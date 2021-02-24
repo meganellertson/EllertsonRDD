@@ -163,3 +163,9 @@ summary(lm_6)
 
 cli::cli_text("Table 3")
 texreg::screenreg(list(lm_1, lm_2, lm_3, lm_4, lm_5, lm_6), type="text")
+
+cli::cli_text("testing")
+ggplot(data = RDDdata) +
+  geom_point(alpha = 0.5) +
+  geom_vline(xintercept = 0.8, color = "black", linetype = 1)+
+  
