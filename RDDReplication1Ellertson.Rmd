@@ -75,15 +75,15 @@ rdplotdensity(density, RDDdata$bac1)
 Question 5 
 ```{r} 
 ## THIS IS THE RIGHT ONE. 
-malecov <- RDestimate(formula = male ~ bac1 | aged + acc + white + cutoff + bac1*cutoff, data = RDDdata, cutpoint = 0.08, bw = 0.05, kernel = "rectangular")
+malecov <- RDestimate(formula = male ~ bac1 | aged + acc + white + cutoff + bac1*cutoff, data = RDDdata, cutpoint = 0.08, bw = 0.05, kernel = "rectangular", se.type = "HC1")
 
 
-agecov <- RDestimate(formula = aged ~ bac1 | male + acc + white + cutoff + bac1*cutoff, data = RDDdata, cutpoint = 0.08, bw = 0.05, kernel = "rectangular")
+agecov <- RDestimate(formula = aged ~ bac1 | male + acc + white + cutoff + bac1*cutoff, data = RDDdata, cutpoint = 0.08, bw = 0.05, kernel = "rectangular", se.type = "HC1")
 
 
-acccov <- RDestimate(formula = acc ~ bac1 | aged + male + white + cutoff + bac1*cutoff, data = RDDdata, cutpoint = 0.08, bw = 0.05, kernel = "rectangular")
+acccov <- RDestimate(formula = acc ~ bac1 | aged + male + white + cutoff + bac1*cutoff, data = RDDdata, cutpoint = 0.08, bw = 0.05, kernel = "rectangular", se.type = "HC1")
 
-whitecov <- RDestimate(formula = white ~ bac1 | aged + male + acc + cutoff + bac1*cutoff, data = RDDdata, cutpoint = 0.08, bw = 0.05, kernel = "rectangular")
+whitecov <- RDestimate(formula = white ~ bac1 | aged + male + acc + cutoff + bac1*cutoff, data = RDDdata, cutpoint = 0.08, bw = 0.05, kernel = "rectangular", se.type = "HC1")
 
 data.frame(male = malecov$est[1], age = agecov$est[1], accident = acccov$est[1], white = whitecov$est[1])
 
