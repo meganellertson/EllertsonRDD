@@ -74,18 +74,6 @@ rdplotdensity(density, RDDdata$bac1)
 
 Question 5 
 ```{r} 
-## THIS IS THE RIGHT ONE. 
-malecov <- RDestimate(formula = male ~ bac1 | aged + acc + white + dui + bac1*dui, data = RDDdata, cutpoint = 0.08, bw = 0.05, kernel = "rectangular", se.type = "HC1")
-
-
-agecov <- RDestimate(formula = aged ~ bac1 | male + acc + white + dui + bac1*dui, data = RDDdata, cutpoint = 0.08, bw = 0.05, kernel = "rectangular", se.type = "HC1")
-
-
-acccov <- RDestimate(formula = acc ~ bac1 | aged + male + white + dui + bac1*dui, data = RDDdata, cutpoint = 0.08, bw = 0.05, kernel = "rectangular", se.type = "HC1")
-
-whitecov <- RDestimate(formula = white ~ bac1 | aged + male + acc + dui + bac1*dui, data = RDDdata, cutpoint = 0.08, bw = 0.05, kernel = "rectangular", se.type = "HC1")
-
-data.frame(male = malecov$est[1], age = agecov$est[1], accident = acccov$est[1], white = whitecov$est[1])
 
 
 ```
@@ -100,27 +88,8 @@ Question 6
 
 Question 7
 ```{r}
-## Panel A
 
 
-RDDdata_subset1 <- RDDdata %>% 
-  filter(bac1>0.03 & bac1 < 0.13)
-
-C1PA <- RDestimate(formula = recidivism ~ bac1 | white + aged + male + acc + dui , data = RDDdata_subset1, cutpoint = 0.08, bw = 0.025, kernel = "rectangular")
-
-C2PA <- RDestimate(formula = recidivism ~ bac1 + dui + bac1*dui, data = RDDdata_subset1, cutpoint = 0.08, bw = 0.025, kernel = "rectangular")
-
-C3PA <- RDestimate(formula = recidivism ~ bac1 + dui + bac1*dui + (bac1^2)*dui, data = RDDdata_subset1, cutpoint = 0.08, bw = 0.025, kernel = "rectangular")
-
-## Panel B 
-RDDdata_subset2 <- RDDdata %>% 
-  filter(bac1>0.055 & bac1 < 0.105)
-
-C1PB <- RDestimate(formula = recidivism ~ bac1 | aged + male + acc + dui + bac1*dui, data = RDDdata_subset2, cutpoint = 0.08, bw = 0.025, kernel = "rectangular")
-
-C2PB <- RDestimate(formula = recidivism ~ bac1*dui | aged + male + acc + dui + bac1*dui, data = RDDdata_subset2, cutpoint = 0.08, bw = 0.025, kernel = "rectangular")
-
-C3PB <- RDestimate(formula = recidivism ~ (bac1^2)*dui | aged + male + acc + dui + bac1*dui + (bac1^2)*dui, data = RDDdata_subset2, cutpoint = 0.08, bw = 0.025, kernel = "rectangular")
 
 
 
