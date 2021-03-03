@@ -1,0 +1,26 @@
+---
+title: "Testing Stargazer Table"
+author: "Megan Ellertson"
+date: "2/15/2021"
+output: html_document
+---
+
+---
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(stargazer)
+library(readr)
+```
+
+```{r}
+raw_hansen_dwi <- read_csv("Tables/hansen_dwi.csv")
+```
+
+Here is the latex table in a PDF document:
+
+```{r mylatextable, results = "asis"}
+stargazer(raw_hansen_dwi, type = 'latex')
+

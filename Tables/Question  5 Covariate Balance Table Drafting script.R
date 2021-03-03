@@ -46,4 +46,3 @@ covariates <- list("No covariates" = "",
 library(plyr)
 ldply(covariates, RD_est, mod = "recidivism ~ bac1", .id = "Specification")
 
-
