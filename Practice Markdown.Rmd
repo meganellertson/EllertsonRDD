@@ -1,0 +1,45 @@
+---
+title: "Drafting Markdown"
+author: "Megan Ellertson"
+date: "3/2/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+library(readr)
+hansen <- read_csv("Data/hansen_dwi.csv")
+hansen <- hansen %>%
+  mutate(bac = bac1 - 0.08)
+
+```
+
+something wrong with the dui variable creation 
+```{r}
+heansen <- mutate(hansen, dui = car::Recode(bac1, "lo: 0.08 = 0; else = 1"))
+head(RDDdata)
+```
+
+
+
+```{r}
+mdoel <- lm(recidivism ~ bac * dui + age + white + male + acc, data = hansen)
+lmtest::coeftest(model, vcov = sandwhich:vcovHC(model))["dui"]
+```
+
+```{r}
+weights <- rdd::kernelwts(habsen$bac, center = 0, bw = 0.05, kernel = "rectranglar")
+model <-lm(recidivism ~ bac * dui + age + white + male + acc, 
+           data = hansen,
+           weights = weights)
+
+lmtest::coeftest(model, vcov =sandwich::vcovHC(model))["dui"]
+```
+
