@@ -121,14 +121,60 @@ The output of this test provide a p-value of 0.9595. Given the high p-value ther
 
 A similar processes can be completed in STATA, as outputted below. Although conducted with similar commands, the package provided in STATA outputs a slightly different P-Value however,it still provides the same conclusions as drawn in R. 
 
+##Question 5 
+The following is the first equation specified by Hansen for the estimation method. In this equation the variable recidivism is the dependent variable for every "i" individual, the large "X" is the vector of the covariates which are being controlled for, such as sex, age and race. Then there are independent variables estimations for the indicator variable for DUI, the BAC level and then the interaction between the two. 
 Equation 1
-$equation$
+$y_i = X_i'\gamma +\alpha_1DUI_i + \alpha_2BAC_i +\alpha_3BAC_i *DUI_i +u_i$
 
-Question 5 
-```{r} 
+The next step is to check the covariate balance, which recreates the first panel of Table 2 in Hansen's paper. 
+
+The following is the STATA version of this table. 
+```{stata} 
+rdrobust male bac1, c(0.08) h(0.05) kernel("uniform")
+estimates store Male, title(Male)
+rdrobust white bac1, c(0.08) h(0.05) kernel("uniform")
+estimates store White, title(White)
+rdrobust aged bac1, c(0.08) h(0.05) kernel("uniform")
+estimates store Age, title(Age)
+rdrobust acc bac1, c(0.08) h(0.05) kernel("uniform")
+estimates store Accident, title(Accident)
+
+estout Male White Age Accident, cells(b(star fmt(4)) se(par fmt(4))) stats(N, labels(N)) label legend varlabels(RD_Estimate "Panel A DUI Threshold")
+```
+As well as the R version of the table. The estimates are slightly different due to the different packages, user-ability to manipulate the commands and methods  between the two software. 
+```{r}
+malecov <- RDestimate(formula = male ~ bac1 | aged + acc + white + dui + bac1*dui, data = RDDdata, cutpoint = 0.08, bw = 0.05, kernel = "rectangular", se.type = "HC1")
+
+
+agecov <- RDestimate(formula = aged ~ bac1 | male + acc + white + dui + bac1*dui, data = RDDdata, cutpoint = 0.08, bw = 0.05, kernel = "rectangular", se.type = "HC1")
+
+
+acccov <- RDestimate(formula = acc ~ bac1 | aged + male + white + dui + bac1*dui, data = RDDdata, cutpoint = 0.08, bw = 0.05, kernel = "rectangular", se.type = "HC1")
+
+whitecov <- RDestimate(formula = white ~ bac1 | aged + male + acc + dui + bac1*dui, data = RDDdata, cutpoint = 0.08, bw = 0.05, kernel = "rectangular", se.type = "HC1")
+
+CovBal = data.frame(
+  Estimates = c("Coeff", "SE"),
+  m = c(malecov$est[1], malecov$se[1]),
+  w = c(whitecov$est[1], whitecov$se[1]),
+  ag = c(agecov$est[1], agecov$se[1]),
+  acc = c(acccov$est[1], acccov$se[1])
+)
+kable(
+  CovBal,
+  col.names = c("Variables", "Male", "White", 
+                "Age", "Accident"),
+  digits = 3,
+  caption = "Table 2: Covariate Balance Panel A Only"
+)
+
+
 
 ```
 
+```{r}
+
+```
 
 Question 6
 ```{r }
