@@ -2,7 +2,8 @@
 
 ##  RDestimate option, issue is there is no SE 
 malecov <- RDestimate(formula = male ~ bac1 | aged + acc + white + dui + bac1*dui, data = RDDdata, cutpoint = 0.08, bw = 0.05, kernel = "rectangular", se.type = "HC1")
-summary(malecov)
+cov1 <- lm_robust(male ~ bac1 + aged + acc + white + dui + dui*bac1, data = RDDdata, se_type = "HC1")
+cov1
 
 agecov <- RDestimate(formula = aged ~ bac1 | male + acc + white + dui + bac1*dui, data = RDDdata, cutpoint = 0.08, bw = 0.05, kernel = "rectangular", se.type = "HC1")
 
@@ -11,8 +12,24 @@ acccov <- RDestimate(formula = acc ~ bac1 | aged + male + white + dui + bac1*dui
 
 whitecov <- RDestimate(formula = white ~ bac1 | aged + male + acc + dui + bac1*dui, data = RDDdata, cutpoint = 0.08, bw = 0.05, kernel = "rectangular", se.type = "HC1")
 
-data.frame(male = malecov$est[1], age = agecov$est[1], accident = acccov$est[1], white = whitecov$est[1])
+CovBal = data.frame(
+  Variables = c("Male", "Age", "Accident", "White"),
+  M_1 = c(malecov$est[1], agecov$est[1], 
+          acccov$est[1], whitecov$est[1]),
+  S_1 = c(malecov$se[1], agecov$se[1], acccov$se[1],
+          whitecov$se[1])
+)
+kable(
+  CovBal,
+  col.names = c("Variables", "Estimate", "SE"),
+  digits = 3,
+  caption = "Table 2: Covariate Balance"
+)
 
+stargazer(malecov, agecov, acccov, whitecov,
+  type = "html",
+  out = "EllertsonRDD/Figures/CovBalanceTable.htm"
+)
 ## The following pulls in the correct SE however I can not get them to line up in a table.        
 malecov$se[1]
 agecov$se[1]
