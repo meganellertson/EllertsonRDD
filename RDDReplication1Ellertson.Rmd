@@ -26,6 +26,7 @@ library(estimatr)
 library(rdrobust)
 library(rddensity)
 library(cli)
+library(kableExtra)
 library(stargazer)
 
 library(Statamarkdown)
@@ -48,19 +49,46 @@ Question 2
 
 Question 3
 
-```{r }
+```{r, echo= FALSE, message=FALSE }
 RDDdata <- raw_hansen_dwi %>%
   mutate(dui = car::Recode(bac1, "lo: 0.08=0; else = 1")) %>%
   mutate(lininteract = dui*bac1) %>%
   mutate(bac1sq = bac1 ^ 2) %>%
   mutate(quadinteract = dui*bac1sq)
-head(RDDdata)
+
 ``` 
 ````{stata}
 use hansen_dwi.dta
 summarize
 ```
-![Alt text] ()
+
+```{r}
+sumstat = data.frame(
+  Measure = c("Recidivism", "BAC", "DUI", "Male", "Accident", "Age", "White"),
+  Means  = c(mean(RDDdata$recidivism), mean(RDDdata$bac1), mean(RDDdata$dui), 
+           mean(RDDdata$male), mean(RDDdata$acc), mean(RDDdata$aged), 
+           mean(RDDdata$white)),
+  StandardErrors= c(sd(RDDdata$recidivism), sd(RDDdata$bac1),
+                    sd(RDDdata$dui), sd(RDDdata$male),
+                    sd(RDDdata$acc),sd(RDDdata$aged), 
+                    sd(RDDdata$white)),
+    Minimum  = c(min(RDDdata$recidivism), min(RDDdata$bac1), 
+                 min(RDDdata$dui), min(RDDdata$male),
+                 min(RDDdata$acc),min(RDDdata$aged), 
+                 min(RDDdata$white)),
+      Maximum  = c(max(RDDdata$recidivism), max(RDDdata$bac1), 
+                   max(RDDdata$dui), max(RDDdata$male), 
+                   max(RDDdata$acc), max(RDDdata$aged), 
+                   max(RDDdata$white))
+            
+)
+  sumstat
+
+```
+
+```{r}
+
+```
 
 ````{stata}
 use hansen_dwi
@@ -69,12 +97,12 @@ tabulate bac1
 
 Question 4 
 ```{r}
-
+stargazer(RDDdata, type = "text", sytle="aer", summary = TRUE)
 ```
 
 
-```{r mylatextable, results = "asis"}
-stargazer(RDDdata, type = 'text')
+```{r]
+
 
 ```
 
@@ -112,7 +140,7 @@ Question 6
 
 ```
 
-![testing](Figures/Linear.gph)
+![testing](Figures/Linear.png)
 
 
 Question 7
@@ -124,7 +152,7 @@ Question 7
 
 ```
 
-![testing](Figures/Linear.gph)
+
 
 Question 8
 ```{r}
