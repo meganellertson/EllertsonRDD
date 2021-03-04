@@ -45,12 +45,13 @@ Question 3
 
 ```{r }
 RDDdata <- raw_hansen_dwi %>%
-  mutate(dui = car::Recode(bac1, "lo: 0.08; else = 1")) %>%
+  mutate(dui = car::Recode(bac1, "lo: 0.08=0; else = 1")) %>%
   mutate(lininteract = dui*bac1) %>%
   mutate(bac1sq = bac1 ^ 2) %>%
   mutate(quadinteract = dui*bac1sq)
-
+head(RDDdata)
 ``` 
+
 Question 4 
 ```{r}
 
@@ -82,7 +83,6 @@ rdplotdensity(density, RDDdata$bac1)
 
 Question 5 
 ```{r} 
-
 
 ```
 

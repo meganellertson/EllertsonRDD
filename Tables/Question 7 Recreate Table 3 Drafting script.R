@@ -8,7 +8,9 @@ RDDdata <- raw_hansen_dwi %>%
 
 ## Recentering and weights 
 RDD7 <- RDDdata %>%
-  mutate(bac = bac1 - 0.08)
+  mutate(bac7 = bac1 - 0.08) %>%
+  mutate(dui7 = ifelse(bac17 >= 0, 1, 0))
+
 ## LM formula 
 RDDdata_subset1 <- RDDdata %>% 
   filter(bac1>0.03 & bac1 < 0.13)

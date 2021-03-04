@@ -46,3 +46,27 @@ covariates <- list("No covariates" = "",
 library(plyr)
 ldply(covariates, RD_est, mod = "recidivism ~ bac1", .id = "Specification")
 
+## Best Option 
+malecov <- RDestimate(formula = male ~ bac1 | aged + acc + white + dui + bac1*dui, data = RDDdata, cutpoint = 0.08, bw = 0.05, kernel = "rectangular", se.type = "HC1")
+
+
+agecov <- RDestimate(formula = aged ~ bac1 | male + acc + white + dui + bac1*dui, data = RDDdata, cutpoint = 0.08, bw = 0.05, kernel = "rectangular", se.type = "HC1")
+
+
+acccov <- RDestimate(formula = acc ~ bac1 | aged + male + white + dui + bac1*dui, data = RDDdata, cutpoint = 0.08, bw = 0.05, kernel = "rectangular")
+
+whitecov <- RDestimate(formula = white ~ bac1 | aged + male + acc + dui + bac1*dui, data = RDDdata, cutpoint = 0.08, bw = 0.05, kernel = "rectangular")
+
+data.frame(male = malecov$est[1], age = agecov$est[1], accident = acccov$est[1], white = whitecov$est[1]) +
+  
+  
+  
+  
+  t2 <- vector(mode = "list", length = 4)
+t2[[1]] <- malecov
+t2[[2]] <- whitecov
+t2[[3]] <- agecov
+t2[[4]] <- acccov
+stargazer(t2, type = "text")
+
+stargazer(malecov, whitecov, agecov, acccov, title = "Covariate Balance", align=TRUE)
