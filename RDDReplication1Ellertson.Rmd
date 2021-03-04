@@ -244,10 +244,27 @@ lmtest::coeftest(C2PA, vcov = sandwich::vcovHC(C2PA))
 ```
 
 Question 8
-```{r}
+```{stata}
+cmogram recidivism bac1, cut(0.08) scatter line(0.08) qfitci title("BAC and Recidivism Quadratic")
+**Figure19.gph
+cmogram recidivism bac1, cut(0.08) scatter line(0.08) lfitci title("BAC and Recidivism Linear")
+**Figure20.gph
 
-  
+graph combine Figure19 Figure20 
+**Basic.gph
+
+rdplot recidivism bac1 if bac1 < 0.15, c(0.08) p(1) ci(95) graph_options(title("BAC and Recidivism Linear"))
+**Figure21.gph
+rdplot recidivism bac1 if bac1 < 0.15, c(0.08) p(2) ci(95) graph_option(title("BAC and Recidivism Quadratic"))
+**Figure22.gph
+
+graph combine Figure21 Figure22
+**Basic2.gph
+
 ```
+
+![BAC and Recidivism (Panel A)](Figures/Basic.png)
+![BAC and Recidivism (Panel A)](Figures/Basic2.png)
 
 
 Question 9
