@@ -46,15 +46,17 @@ raw_hansen_dwi <- read_csv("Data/hansen_dwi.csv")
 use hansen_dwi.dta
 
 ```
-Question 1
+##Question 1
 The link below is connected to my github repository, which I have labeled (**EllertsonRDD**)[https://github.com/meganellertson/EllertsonRDD.git] due to the fact that I have another repository called RDD in my github currently. As an additional note, I began this assignment in both R and STATA. Given I am very new to R and have some prior experience in STATA, I wanted to take this opportunity to learn R and supplement what I was unable to figure out in R with the STATA software. Thus, I utilize both R and STATA code and output through this markdown page. My final do.file and figures from STATA are also located in the (**EllertsonRDD**)[https://github.com/meganellertson/EllertsonRDD.git] repository on github for specifics on my process in STATA if not fully displayed in the code for this markdown page. 
 
 https://github.com/meganellertson/EllertsonRDD.git
 
-Question 2 
-**Summary**
+##Question 2 
 
-Question 3
+#Summary
+*Punishment and Deterrence: Evidence from Drunk Driving* (Hansen, 2015) attempts to understand the effect of harsher punishments and sanctions on recidivism, particularly related to drunk driving and DUIs.  Hansen attempts to further the literature on contradictory conclusions provided by prior criminologists and economists on this topic. In this analysis Hansen analyzes the policy of the DUI, through the blood alcohol content thresholds and a quasi-experimental design to understand the effect that harsher punishment has on people's inclination to repeat a crime, specifically drinking and driving. Hansen utilizes DUI BAC test data from the state of Washington between 1999 and 2007, this specific time frame allows for the examination of a four year recivisims window as well as the constant nature of the BAC thresholds at 0.08 and 0.15 (aggravated DUI) after 1999.  The analysis ensures to look at individuals over the age of 21 given the behavior and punishment for drunk driving is very different. Hansen utilizes a McCrary Density test prior to local linear regression discontinuity design to ensure that the estimates are unbiased. Given the McCrary Density test, Hansen finds that there is no evidence of “endogenous sorting” or, more planely, that at the cutoff individuals are randomly getting slightly above or slightly below the DUI threshold. This means they cannot sort themselves or be sorted into or out of the DUI charge, it is just locally random. Hasen does confirm this through the density test, and thus can proceed with the regression discontinuity. He utilizes a local linear regression discontinuity to obtain the estimates with slopes that change at the discontinuity and with rectangular kernels.  The indicator variable, or dummy variable is when the BAC level is at or above 0.08 or in the case of the aggravated DUI: at or above 015. There are additional controls included such as age, gender, accident at the scene, and race. The running variable is the minimum between the two BAC tests provided at the scene which are usually very close in value. Hansen finds that these punishments do reduce recidivism. He finds that having a BAC at the DUI level or above decreases recidivism by 2 percentage points during the four years after the initial conviction (this is statistically significant at the 1%).  Similar results are found for the aggravated DUI level. The study also looks at how increasing severity of punishment impacts diversion. He finds that a 10% increase in sanctions for drunk driving reduces the act by 2.3%.  Hansen also addresses some other factors which contribute to recidivism rates such as incapacitation,rehabilitation and deterrence.  Deterrence ends up being the primary way for addressing this.Although Hansen also notes that the identification strategy is limited due to the inability to assess the effect of more severe punishments and testing for those who are first time offenders.
+
+##Question 3
 
 ```{r, echo= FALSE, message=FALSE }
 RDDdata <- raw_hansen_dwi %>%
