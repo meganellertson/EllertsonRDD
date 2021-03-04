@@ -58,6 +58,7 @@ https://github.com/meganellertson/EllertsonRDD.git
 
 ##Question 3
 
+The cutoff variable is related to the running variable, in that it is a treatment or cutoff of the range of the running variable. In this case, the dummy variable that will be created is in relation to the BAC level of the individual, specifically at the point they would be given a DUI (BAC = 0.08).  In the paper Hansen also focuses on aggrivated DUI, but this analysis will be focusing on one cutoff at the 0.08 threshold. This can be done in STATA or R by simply creating a new variable contingent upon the value of the BAC variable which already exists in the data set. The following Summary Statistics table provides more isnight into the nature of the data. 
 ```{r, echo= FALSE, message=FALSE }
 RDDdata <- raw_hansen_dwi %>%
   mutate(dui = car::Recode(bac1, "lo: 0.08=0; else = 1")) %>%
@@ -66,7 +67,9 @@ RDDdata <- raw_hansen_dwi %>%
   mutate(quadinteract = dui*bac1sq)
 
 ``` 
+```{stata, echo=FALSE, message=FALSE}
 
+```
 
 ```{r, echo = FALSE }
 sumstat = data.frame(
@@ -96,7 +99,7 @@ kable(
   caption = "Summary Statistics Table"
 )
 ```
-
+The table shows that many of the variables of concern are binary and take the value of either 0 or 1. The data only looks at individuals of a legal drinking age, 21 and the highest age of 80. Much of the individuals pulled over for drunk driving are white with a mean of 0.84 and are usually men. The maximum BAC level reported in the data set is 0.45, which is much higher than even the aggravated BAC level. 
 ```{r}
 
 ```
