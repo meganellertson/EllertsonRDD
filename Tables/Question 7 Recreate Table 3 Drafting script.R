@@ -9,10 +9,20 @@ RDDdata <- raw_hansen_dwi %>%
 ## Recentering and weights 
 RDD7 <- RDDdata %>%
   mutate(bac7 = bac1 - 0.08) %>%
-  mutate(dui7 = ifelse(bac17 >= 0, 1, 0))
+  mutate(dui7 = ifelse(bac7 >= 0, 1, 0)) %>%
+  mutate(lininteract7 = dui7*bac7) %>%
+  mutate(bacsq7 = bac7 ^ 2) %>%
+  mutate(quadinteract7 = dui7*bacsq7)
+
+##
+weights <- rdd:kernelwts(RDD7$bac7, center = 0, bw = 0.05, kernel = "rectangular")
+model <- lm(recidivism ~ bac7*dui7 + aged + white + male + acc, 
+            data = RDD7,
+            weights = weights)
+lmtest::coeftest(model, vcov = sandwich::vcovHC(model)) ["dui"]
 
 ## LM formula will need to readjust the variable labels. 
-RDDdata_subset1 <- RDDdata %>% 
+RDDdata_subset1 <- RDDdata7 %>% 
   filter(bac1>0.03 & bac1 < 0.13)
 lm_1 <- lm_robust(recidivism ~ bac1, data = RDDdata_subset1)
 lm_2 <- lm_robust(recidivism ~ lininteract, data = RDDdata_subset1)
