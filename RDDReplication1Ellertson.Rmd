@@ -13,7 +13,7 @@ editor_options:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r library set up}
+```{r, echo=FALSE, message=FALSE}
 library(readr)
 library(tidyverse)
 library(ggplot2)
@@ -27,14 +27,17 @@ library(rdrobust)
 library(rddensity)
 library(cli)
 library(stargazer)
+
 library(Statamarkdown)
+stataexe <-"C:/Program Files/Stata16/StataIC-64.exe"
+knitr::opts_chunk$set(engine.path=list(stata=stataexe))
 
 
 ```
 
 Question 1
 
-```{r }
+```{r, echo=FALSE, message=FALSE }
 
 raw_hansen_dwi <- read_csv("Data/hansen_dwi.csv")
 
@@ -53,6 +56,16 @@ RDDdata <- raw_hansen_dwi %>%
   mutate(quadinteract = dui*bac1sq)
 head(RDDdata)
 ``` 
+````{stata}
+use hansen_dwi.dta
+summarize
+```
+![Alt text] ()
+
+````{stata}
+use hansen_dwi
+tabulate bac1
+````
 
 Question 4 
 ```{r}
@@ -83,6 +96,10 @@ density <- rddensity(RDDdata$bac1, c = 0.08)
 rdplotdensity(density, RDDdata$bac1)
 ```
 
+
+Equation 1
+$equation$
+
 Question 5 
 ```{r} 
 
@@ -95,6 +112,8 @@ Question 6
 
 ```
 
+![testing](Figures/Linear.gph)
+
 
 Question 7
 ```{r}
@@ -105,6 +124,7 @@ Question 7
 
 ```
 
+![testing](Figures/Linear.gph)
 
 Question 8
 ```{r}
