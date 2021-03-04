@@ -61,10 +61,7 @@ https://github.com/meganellertson/EllertsonRDD.git
 The cutoff variable is related to the running variable, in that it is a treatment or cutoff of the range of the running variable. In this case, the dummy variable that will be created is in relation to the BAC level of the individual, specifically at the point they would be given a DUI (BAC = 0.08).  In the paper Hansen also focuses on aggrivated DUI, but this analysis will be focusing on one cutoff at the 0.08 threshold. This can be done in STATA or R by simply creating a new variable contingent upon the value of the BAC variable which already exists in the data set. The following Summary Statistics table provides more isnight into the nature of the data. 
 ```{r, echo= FALSE, message=FALSE }
 RDDdata <- raw_hansen_dwi %>%
-  mutate(dui = car::Recode(bac1, "lo: 0.08=0; else = 1")) %>%
-  mutate(lininteract = dui*bac1) %>%
-  mutate(bac1sq = bac1 ^ 2) %>%
-  mutate(quadinteract = dui*bac1sq)
+  mutate(dui = car::Recode(bac1, "lo: 0.08=0; else = 1"))
 
 ``` 
 ```{stata, echo=FALSE, message=FALSE}
@@ -74,21 +71,22 @@ RDDdata <- raw_hansen_dwi %>%
 ```{r, echo = FALSE }
 sumstat = data.frame(
   Measure = c("Recidivism", "BAC", "DUI", "Male", "Accident", "Age", "White"),
-  Means  = c(mean(RDDdata$recidivism), mean(RDDdata$bac1), mean(RDDdata$dui), 
-           mean(RDDdata$male), mean(RDDdata$acc), mean(RDDdata$aged), 
-           mean(RDDdata$white)),
-  StandardErrors= c(sd(RDDdata$recidivism), sd(RDDdata$bac1),
-                    sd(RDDdata$dui), sd(RDDdata$male),
-                    sd(RDDdata$acc),sd(RDDdata$aged), 
-                    sd(RDDdata$white)),
-    Minimum  = c(min(RDDdata$recidivism), min(RDDdata$bac1), 
-                 min(RDDdata$dui), min(RDDdata$male),
-                 min(RDDdata$acc),min(RDDdata$aged), 
-                 min(RDDdata$white)),
-      Maximum  = c(max(RDDdata$recidivism), max(RDDdata$bac1), 
-                   max(RDDdata$dui), max(RDDdata$male), 
-                   max(RDDdata$acc), max(RDDdata$aged), 
-                   max(RDDdata$white))
+  M_1  = c(mean(RDDdata$recidivism), mean(RDDdata$bac1), 
+             mean(RDDdata$dui), mean(RDDdata$male), 
+             mean(RDDdata$acc), mean(RDDdata$aged), 
+             mean(RDDdata$white)),
+  Sd_1 = c(sd(RDDdata$recidivism), sd(RDDdata$bac1),
+              sd(RDDdata$dui), sd(RDDdata$male),
+              sd(RDDdata$acc),sd(RDDdata$aged), 
+              sd(RDDdata$white)),
+  Min_1 = c(min(RDDdata$recidivism), min(RDDdata$bac1), 
+              min(RDDdata$dui), min(RDDdata$male),
+              min(RDDdata$acc),min(RDDdata$aged), 
+              min(RDDdata$white)),
+  Max_1 = c(max(RDDdata$recidivism), max(RDDdata$bac1), 
+              max(RDDdata$dui), max(RDDdata$male), 
+              max(RDDdata$acc), max(RDDdata$aged), 
+              max(RDDdata$white))
             
 )
 
@@ -100,26 +98,9 @@ kable(
 )
 ```
 The table shows that many of the variables of concern are binary and take the value of either 0 or 1. The data only looks at individuals of a legal drinking age, 21 and the highest age of 80. Much of the individuals pulled over for drunk driving are white with a mean of 0.84 and are usually men. The maximum BAC level reported in the data set is 0.45, which is much higher than even the aggravated BAC level. 
-```{r}
 
-```
-
-````{stata}
-use hansen_dwi
-tabulate bac1
-````
-
-Question 4 
-```{r}
-stargazer(RDDdata, type = "text", sytle="aer", summary = TRUE)
-```
-
-
-```{r]
-
-
-```
-
+##Question 4
+The following recreates the frequency distribution which is the method Hansen chooses to visualize the potential sorting behavior along the running variable which may be a form of manipulation. This is important to understand because, if individuals were able to control or sort themselves into the treatment group, it would take away from the ability to utilize the RDD method to draw any casual effects. The sorting would be cause for basis and would change the meaning of the results. 
 
 
 ```{r}
@@ -129,15 +110,16 @@ figure1 + geom_vline(aes(xintercept = 0.08), color = "black", size = 1) +
   geom_vline(aes(xintercept = 0.15), color = "black", size = 1) +
   labs(title = "BAC Histogram", x = "bac1", y = "Frequency")
 ```
-
+Visually, the frequency distribution appears very smooth, and there appears to be no bunching behavior around the cutoff which is indicated by the vertical line. The 0.15 line is included as well to remain as consistent with Hansen's figure as possible. Although visually, this appears may provide for some confidence to the lack of endogenous sorting, it may be more effective to use an additional density test, the McCrary Density test to ensure this conclusion.  
 ```{r}
 
-DCdensity(RDDdata$bac1, cutpoint = 0.08)
-
-density <- rddensity(RDDdata$bac1, c = 0.08)
+density <- rddensity(RDDdata$bac1, c = 0.08, kernel = "uniform")
+summary(density)
 rdplotdensity(density, RDDdata$bac1)
 ```
+The output of this test provide a p-value of 0.9595. Given the high p-value there is substantial evidence that there is no endogenous sorting impacting the data. This allows the RDD method to move forward with the ability to draw casual effect conclusions. Additionally, a density plot is produced which visualizes the cutoff of 0.08, the black line is prior to the cutoff and the red line is after the cutoff or the portion of the sample which would have received DUIs. It would make sense that there would not be sorting in the running variable for a few reasons, many of which are pointed out in Hansen's paper. Given the running variable is BAC, it is an extremely difficult measurement for an individual to control and particularly to control right at the DUI level. The BAC is very specific to the individuals body, and their activities, not to mention the difficulty in judgment one would suffer if they were even to attempt to control their BAC while drinking. Additionally, how the BAC is measured is extremely precise, therefore, it would be difficult to control for at such a specific level. 
 
+A similar processes can be completed in STATA, as outputted below. Although conducted with similar commands, the package provided in STATA outputs a slightly different P-Value however,it still provides the same conclusions as drawn in R. 
 
 Equation 1
 $equation$
