@@ -70,3 +70,24 @@ C3PB <- RDestimate(formula = recidivism ~ (bac1^2)*dui | aged + male + acc + dui
 ## Table format incomplete 
 cli::cli_text("Table 3 RDestimate")
 texreg::screenreg(list(), type="text")
+
+
+##Question 8
+categories <- RDDdata$bac1 
+demmeans <- split(RDDdata$recidivism, cut(RDDdata$bac1, 100)) %>%
+  lapply(mean) %>%
+  unlist()
+agg_RDDdata <- data.frame(recidivism = demmeans, bac1 = seq(0.01, 0.5, by = 0.01))
+plottingdata <- RDDdata %>%
+  mutate(gg_group = case_when(bac1>= 0.08 ~ 1, TRUE ~ 0))
+
+ggplot(plottingdata, aes(bac1, recidivism)) +
+  geom_point(aes(x=bac1, y = recidivism), data = agg_RDDdata) + xlim(0, 0.2) + ylim(0.08, 0.16) +
+  stat_smooth(aes(bac1, recidivism, group = gg_group), method = "lm", formula = y ~ x + I(x^2)) +
+  xlim(0,0.2) + ylim(0,1) +
+  geom_vline(xintercept = 0.08)
+
+ggplot(plottingdata, aes(bac1, recidivism)) +
+  geom_point(aes(x=bac1, y = recidivism), data = agg_RDDdata) +
+  stat_smooth(aes(bac1, recidivism, group = gg_group), method = "lm") +
+  geom_vline(xintercept = 0.08)
