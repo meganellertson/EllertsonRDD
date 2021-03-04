@@ -36,13 +36,20 @@ knitr::opts_chunk$set(engine.path=list(stata=stataexe))
 
 ```
 
-Question 1
 
 ```{r, echo=FALSE, message=FALSE }
 
 raw_hansen_dwi <- read_csv("Data/hansen_dwi.csv")
 
 ```
+````{stata, echo=FALSE, message=FALSE}
+use hansen_dwi.dta
+
+```
+Question 1
+The link below is connected to my github repository, which I have labeled (**EllertsonRDD**)[https://github.com/meganellertson/EllertsonRDD.git] due to the fact that I have another repository called RDD in my github currently. As an additional note, I began this assignment in both R and STATA. Given I am very new to R and have some prior experience in STATA, I wanted to take this opportunity to learn R and supplement what I was unable to figure out in R with the STATA software. Thus, I utilize both R and STATA code and output through this markdown page. My final do.file and figures from STATA are also located in the (**EllertsonRDD**)[https://github.com/meganellertson/EllertsonRDD.git] repository on github for specifics on my process in STATA if not fully displayed in the code for this markdown page. 
+
+https://github.com/meganellertson/EllertsonRDD.git
 
 Question 2 
 **Summary**
@@ -57,12 +64,9 @@ RDDdata <- raw_hansen_dwi %>%
   mutate(quadinteract = dui*bac1sq)
 
 ``` 
-````{stata}
-use hansen_dwi.dta
-summarize
-```
 
-```{r}
+
+```{r, echo = FALSE }
 sumstat = data.frame(
   Measure = c("Recidivism", "BAC", "DUI", "Male", "Accident", "Age", "White"),
   Means  = c(mean(RDDdata$recidivism), mean(RDDdata$bac1), mean(RDDdata$dui), 
@@ -82,8 +86,13 @@ sumstat = data.frame(
                    max(RDDdata$white))
             
 )
-  sumstat
 
+kable(
+  sumstat,
+  col.names = c("Variables", "Mean", "Standard Deviation", "Minimum", "Maximum"),
+  digits = 2,
+  caption = "Summary Statistics Table"
+)
 ```
 
 ```{r}
