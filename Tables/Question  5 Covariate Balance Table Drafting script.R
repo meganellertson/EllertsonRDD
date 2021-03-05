@@ -1,5 +1,8 @@
 ## Question 5: Covariate Balance
 
+put under the pdf line for print out if this doesnt work
+pdf_document: default
+
 rdplotdensity(density, RDDdata$bac1)
 ##  RDestimate option, issue is there is no SE 
 malecov <- RDestimate(formula = male ~ bac1 | aged + acc + white + dui + bac1*dui, data = RDDdata, cutpoint = 0.08, bw = 0.05, kernel = "rectangular", se.type = "HC1")

@@ -3,7 +3,6 @@ title: "RDD Replication 1"
 author: "Megan Ellertson"
 date: "2/14/2021"
 output:
-  pdf_document: default
   html_document: default
 editor_options: 
   chunk_output_type: inline
@@ -43,17 +42,17 @@ raw_hansen_dwi <- read_csv("Data/hansen_dwi.csv")
 
 ```
 
-````{stata, echo=FALSE, message=FALSE}
+````{stata, echo=FALSE, message=FALSE, warning = FALSE}
 sysuse "C:\Users\megan\Documents\UT\Spring 2021\Casual Inference\Replications\RDD Replication Final\EllertsonRDD\Data\hansen_dwi.dta"
 
 sum hansen_dwi
  
 ```
-**Unable to change STATA directory within R**
+**Was unable to change STATA directory within R**
 
 ## Question 1
 
-The link below is connected to my github repository, which I have labeled (**EllertsonRDD**)[https://github.com/meganellertson/EllertsonRDD.git] due to the fact that I have another repository called RDD in my github currently. As an additional note, I began this assignment in both R and STATA. Given I am very new to R and have some prior experience in STATA, I wanted to take this opportunity to learn R and supplement what I was unable to figure out in R with the STATA software. Thus, I utilize both R and STATA code and output through this markdown page. My final do.file and figures from STATA are also located in the (**EllertsonRDD**)[https://github.com/meganellertson/EllertsonRDD.git] repository on github for specifics on my process in STATA if not fully displayed in the code for this markdown page. 
+The link below is connected to my github repository, which I have labeled (**EllertsonRDD**)[https://github.com/meganellertson/EllertsonRDD.git] due to the fact that I have another repository called RDD in my github, which I made while I was learning to use Git/github I wanted to keep it seperate. As an additional note, I began this assignment in both R and STATA. I wanted to use this as an opportunity to learn R (which I am very new to) and expand my skills in STATA. Therefore, this Markdown is completed with the R software as much as possible and to the best of my ability and supplemented with STATA when necessary. My full assignment STATA codes are in the do.file in my (**EllertsonRDD**)[https://github.com/meganellertson/EllertsonRDD.git] repository, as well as the outputted figures and graphs from STATA. When I needed to use STATA I display the code used to produce the output. 
 
 https://github.com/meganellertson/EllertsonRDD.git
 
@@ -62,16 +61,18 @@ https://github.com/meganellertson/EllertsonRDD.git
 Summary
 *Punishment and Deterrence: Evidence from Drunk Driving* (Hansen, 2015) attempts to understand the effect of harsher punishments and sanctions on recidivism, particularly related to drunk driving and DUIs.  Hansen attempts to further the literature on contradictory conclusions provided by prior criminologists and economists on this topic. In this analysis Hansen analyzes the policy of the DUI, through the blood alcohol content thresholds and a quasi-experimental design to understand the effect that harsher punishment has on people's inclination to repeat a crime, specifically drinking and driving. Hansen utilizes DUI BAC test data from the state of Washington between 1999 and 2007, this specific time frame allows for the examination of a four year recivisims window as well as the constant nature of the BAC thresholds at 0.08 and 0.15 (aggravated DUI) after 1999.  The analysis ensures to look at individuals over the age of 21 given the behavior and punishment for drunk driving is very different. Hansen utilizes a McCrary Density test prior to local linear regression discontinuity design to ensure that the estimates are unbiased. Given the McCrary Density test, Hansen finds that there is no evidence of “endogenous sorting” or, more planely, that at the cutoff individuals are randomly getting slightly above or slightly below the DUI threshold. This means they cannot sort themselves or be sorted into or out of the DUI charge, it is just locally random. Hasen does confirm this through the density test, and thus can proceed with the regression discontinuity. He utilizes a local linear regression discontinuity to obtain the estimates with slopes that change at the discontinuity and with rectangular kernels.  The indicator variable, or dummy variable is when the BAC level is at or above 0.08 or in the case of the aggravated DUI: at or above 015. There are additional controls included such as age, gender, accident at the scene, and race. The running variable is the minimum between the two BAC tests provided at the scene which are usually very close in value. Hansen finds that these punishments do reduce recidivism. He finds that having a BAC at the DUI level or above decreases recidivism by 2 percentage points during the four years after the initial conviction (this is statistically significant at the 1%).  Similar results are found for the aggravated DUI level. The study also looks at how increasing severity of punishment impacts diversion. He finds that a 10% increase in sanctions for drunk driving reduces the act by 2.3%.  Hansen also addresses some other factors which contribute to recidivism rates such as incapacitation,rehabilitation and deterrence.  Deterrence ends up being the primary way for addressing this.Although Hansen also notes that the identification strategy is limited due to the inability to assess the effect of more severe punishments and testing for those who are first time offenders.
 
-Question 3
+## Question 3
 
-The cutoff variable is related to the running variable, in that it is a treatment or cutoff of the range of the running variable. In this case, the dummy variable that will be created is in relation to the BAC level of the individual, specifically at the point they would be given a DUI (BAC = 0.08).  In the paper Hansen also focuses on aggrivated DUI, but this analysis will be focusing on one cutoff at the 0.08 threshold. This can be done in STATA or R by simply creating a new variable contingent upon the value of the BAC variable which already exists in the data set. The following Summary Statistics table provides more isnight into the nature of the data. 
-```{r, echo= FALSE, message=FALSE }
+The cutoff variable is related to the running variable, in that it is a treatment or cutoff of the range of the running variable. In this case, the dummy variable that will be created is in relation to the BAC level of the individual, specifically at the point they would be given a DUI (BAC = 0.08).  In the paper Hansen also focuses on aggravated DUI, but this analysis will be focusing on one cutoff at the 0.08 threshold. This can be done in STATA or R by simply creating a new variable contingent upon the value of the BAC variable which already exists in the data set.The printed code for both STATA and R are provided to show how this was completed. The subsequent Summary Statistics table provides more insight into the nature of the data, specifically after the new cutoff variable, dui is included. 
+```{r, echo = TRUE, message=FALSE}
 RDDdata <- raw_hansen_dwi %>%
   mutate(dui = car::Recode(bac1, "lo: 0.08=0; else = 1"))
 
 ``` 
-```{stata, echo=FALSE, message=FALSE}
-
+```{stata, echo=TRUE, message=FALSE, warning = FALSE}
+gen dui = 0
+replace dui = 1 if bac1>=0.8 
+sum dui
 ```
 
 ```{r, echo = FALSE }
@@ -103,9 +104,9 @@ sumstat %>%
 ) %>%
   kable_classic(full_width = F, html_font = "Cambria")
 ```
-The table shows that many of the variables of concern are binary and take the value of either 0 or 1. The data only looks at individuals of a legal drinking age, 21 and the highest age of 80. Much of the individuals pulled over for drunk driving are white with a mean of 0.84 and are usually men. The maximum BAC level reported in the data set is 0.45, which is much higher than even the aggravated BAC level. 
+The table above shows that many of the variables of concern are binary and take the value of either 0 or 1. The data only looks at individuals of a legal drinking age, 21 and the highest age of 80. Much of the individuals pulled over for drunk driving are white with a mean of 0.84 and are usually men. The maximum BAC level reported in the data set is 0.45, which is much higher than even the aggravated BAC level. 
 
-Question 4
+## Question 4
 
 The following recreates the frequency distribution which is the method Hansen chooses to visualize the potential sorting behavior along the running variable which may be a form of manipulation. This is important to understand because, if individuals were able to control or sort themselves into the treatment group, it would take away from the ability to utilize the RDD method to draw any casual effects. The sorting would be cause for basis and would change the meaning of the results. 
 
@@ -118,39 +119,28 @@ figure1 + geom_vline(aes(xintercept = 0.08), color = "black", size = 1) +
   labs(title = "BAC Histogram", x = "bac1", y = "Frequency")
 ```
 Visually, the frequency distribution appears very smooth, and there appears to be no bunching behavior around the cutoff which is indicated by the vertical line. The 0.15 line is included as well to remain as consistent with Hansen's figure as possible. Although visually, this appears may provide for some confidence to the lack of endogenous sorting, it may be more effective to use an additional density test, the McCrary Density test to ensure this conclusion.  
-```{r, message = FALSE}
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
 
 density <- rddensity(RDDdata$bac1, c = 0.08, kernel = "uniform")
 summary(density)
-rdplotdensity(density, RDDdata$bac1)
 
 ```
+```{r, echo = FALSE}
+rdplotdensity(density, RDDdata$bac1)
+```
+
 The output of this test provide a p-value of 0.9595. Given the high p-value there is substantial evidence that there is no endogenous sorting impacting the data. This allows the RDD method to move forward with the ability to draw casual effect conclusions. Additionally, a density plot is produced which visualizes the cutoff of 0.08, the black line is prior to the cutoff and the red line is after the cutoff or the portion of the sample which would have received DUIs. It would make sense that there would not be sorting in the running variable for a few reasons, many of which are pointed out in Hansen's paper. Given the running variable is BAC, it is an extremely difficult measurement for an individual to control and particularly to control right at the DUI level. The BAC is very specific to the individuals body, and their activities, not to mention the difficulty in judgment one would suffer if they were even to attempt to control their BAC while drinking. Additionally, how the BAC is measured is extremely precise, therefore, it would be difficult to control for at such a specific level. 
 
-A similar processes can be completed in STATA, as outputted below. Although conducted with similar commands, the package provided in STATA outputs a slightly different P-Value however,it still provides the same conclusions as drawn in R. 
-
-Question 5 
+## Question 5 
 
 The following is the first equation specified by Hansen for the estimation method. In this equation the variable recidivism is the dependent variable for every "i" individual, the large "X" is the vector of the covariates which are being controlled for, such as sex, age and race. Then there are independent variables estimations for the indicator variable for DUI, the BAC level and then the interaction between the two. 
 
-Equation 1
+**Equation 1** 
 $y_i = X_i'\gamma +\alpha_1DUI_i + \alpha_2BAC_i +\alpha_3BAC_i *DUI_i +u_i$
 
-The next step is to check the covariate balance, which recreates the first panel of Table 2 in Hansen's paper. The following is the STATA version of this table. 
-```{stata} 
-rdrobust male bac1, c(0.08) h(0.05) kernel("uniform")
-estimates store Male, title(Male)
-rdrobust white bac1, c(0.08) h(0.05) kernel("uniform")
-estimates store White, title(White)
-rdrobust aged bac1, c(0.08) h(0.05) kernel("uniform")
-estimates store Age, title(Age)
-rdrobust acc bac1, c(0.08) h(0.05) kernel("uniform")
-estimates store Accident, title(Accident)
+The next step is to check the covariate balance, which recreates the first panel of Table 2 in Hansen's paper. 
 
-estout Male White Age Accident, cells(b(star fmt(4)) se(par fmt(4))) stats(N, labels(N)) label legend varlabels(RD_Estimate "Panel A DUI Threshold")
-```
-As well as the R version of the table. The estimates are slightly different due to the different packages, user-ability to manipulate the commands and methods  between the two software. 
-```{r, results = 'asis'}
+```{r, echo = FALSE, results = 'asis'}
 malecov <- RDestimate(formula = male ~ bac1 | aged + acc + white + dui + bac1*dui, data = RDDdata, cutpoint = 0.08, bw = 0.05, kernel = "rectangular", se.type = "HC1")
 
 
@@ -185,12 +175,12 @@ CovBal %>%
 
 
 ```
-Although slightly different than Hansen's paper, but this output provides the same lack of statistical significance. This means that there is a failure to reject the null hypothesis that the characteristics are unrelated to the cutoff. This is somewhat of an issue for the overall RDD estimation. This means there are individual effects from the characteristics impacting the jumping behavior at the BAC cutoff on their own, with could cause misinterpretation of cutoff discontinuity estimation while focusing on recidivism. Question 6 allows for further exploration into the visualization of these characteristics. 
+Although slightly different than Hansen's paper, but this output provides the same lack of statistical significance. This means that there is a failure to reject the null hypothesis that the characteristics are unrelated to the cutoff. This is somewhat of an issue for the overall RDD estimation. This means there are individual effects from the characteristics impacting the jumping behavior at the BAC cutoff on their own, with could cause misinterpretation of cutoff discontinuity estimation while focusing on recidivism. Question 6 allows for further exploration into the visualization of these characteristics. The estimates can be interpreted as follows: the effect of being male on 
 
 ## Question 6
 
 Figure 2 from Hansen looks at the covariate balance. This takes into account the covariates which will be used to control for. We must examine how these interact with the running variable individually to draw more consistent and unbiased conclusions from our full RDD estimates. The visualization of this covariate specific understanding looks at the shape of the scatter plots around the cutoff, as well as the shape of the relationship of the covariate along the running variable. The first provided set of graphs is created and combined with STATA, this provides a linear fit for the scatter plot on either side of the cutoff. The following is both the linear and the quadratic fit for these regressions, and uses the cmogram command in STATA. 
-```{stata}
+```{stata, eval = FALSE}
 cmogram acc bac1, cut(0.08) scatter line(0.08) lfitci title("Panel A Accident Linear") 
 **Figure3.gph
 cmogram male bac1, cut(0.08) scatter line (0.08) lfitci title("Panel B Male Linear")
@@ -208,7 +198,7 @@ graph combine Figure3 Figure4 Figure5 Figure6, replace
 ![BAC and Characteristics (Quadratic Cmogram)](Figures/quadratic.png)
 
 The image can also be created with the rdd package. 
-```{stata, echo = FALSE}
+```{stata, eval = FALSE}
 
 rdplot male bac1, c(0.08) p(1) bw(0.05) graph_options(title("Panel B Male Linear"))
 **Figure7.gph
@@ -225,13 +215,13 @@ graph combine Figure7 Figure8 Figure9 Figure10, replace
 ```
 ![BAC and Characteristics (Linear RDD)](Figures/Linear2.png)
 ![BAC and Characteristics (Quadratic rdd)](Figures/quadratic2.png)
-It is somewhat difficult to the see the difference in the shape of the line due to the size and compactness of the combined graphs. But also this shows the direction of the scatter plot is fairly uniform on either side of the cutoff. This is a larger generalization of the overall.  There seems to be a common trend of a large spead which happens across characteristics at the upper end of the BAC running variable. 
+It is somewhat difficult to the see the difference in the shape of the line due to the size and compactness of the combined graphs. But also this shows the direction of the scatter plot is fairly uniform on either side of the cutoff. This is a larger generalization of the overall.  There seems to be a common trend of a large spread which happens across characteristics at the upper end of the BAC running variable. 
 The trend lines of these character plots should remain unchanged or smooth as they cross the threshold of the BAC 0.08 level. The visuals are consistent with the output generated by the Table 2 estimates.  These visuals displace some discontinuity across the cutoff at for these characteristics. 
 
 
 ## Question 7
-
-```{r}
+To proceed with the RDD estimation, Table 3 from Hansen's paper, is replicated with a few specific manipulations. In this, we will be focusing on the DUI estimate or the effect at the cutoff which is what is of interest. There are a few stipulations which are provided in the footnote of the table below. The bandwidth around the cutoff (DUI) is evaluated at 0.05 and 0.025 above and below the cutoff, this is separated by Panel A and Panel B respectively. Additionally, this table examines the estimated effect of DUI with just the running variable is controlled for (Condition 1), when there is a linear interaction between the cutoff and the running variable (Condition 2) and when there is a quadratic interaction between the running variable and the cutoff (Condition 3).  Note that all of these estimates use the robust standard errors through the use of the lm_robust command.  
+```{r, echo = FALSE}
 
 RDD7a <- RDDdata %>%
   mutate(bac7 = bac1 - 0.08,
@@ -280,8 +270,8 @@ C3PB <- lm_robust(recidivism ~ dui7*(bac7 + bacsq7) + aged +
            weights = weightsb)
 
 Esttab = data.frame(
-  Estimates = c("Panel A", "StErrs", "pvalue",
-                "Panel B", "StErrs", "pvalue"),
+  Estimates = c("Panel A Bandwith 0.05", "StErrs", "pvalue",
+                "Panel B Bandwith 0.025", "StErrs", "pvalue"),
   Condition1 = c(C1PA$coefficients[3], C1PA$std.error[3], 
                  C1PA$p.value[3],C1PB$coefficients[3], 
                  C1PB$std.error[3], C2PB$p.value[3]),
@@ -294,17 +284,25 @@ Esttab = data.frame(
 )
 Esttab %>%
   kable(
-  col.names = c("Panels", "Condition 1", "Condition 2", 
-               "Condition 3"),
+  col.names = c("Panels", "Condition 1: BAC Alone", 
+                "Condition 2: Linear Interaction", 
+               "Condition 3: Quadratic Interaction"),
   digits = 3,
   caption = "Table 3: Regression Discontinuity Estimates for the Effect of Exceeding the 0.08 bac Threshold on Recidivism"
 ) %>%
-  kable_classic(full_width = F, html_font = "Cambria")
+  kable_classic(full_width = F, html_font = "Cambria") %>%
+  footnote(general = "The table above replicates the Table 3 from Hansen (2015). Panel A represents the estimates with a bandwith of 0.05 and Panel B represents estiamtes with a bandwidth of 0.025, the data used here is centered, therefore the bandwiths represented frame -0.05 to 0.05 and -0.025 to 0.025 respectively. Condition 1 controls for BAC linearly, Condition 2 controls for the linear interaction between BAC and the DUI cutoff, and Condition 3 controls for the quadratic interaction between BAC and the DUI cutoff. The estimates of interest is the DUI variable therefore, it is the only variable from the model represented in the table. P-values are provided below to show statistical signficance. The esitmations use rectangular kernel weights.",
+           footnote_as_chunk = T, 
+           title_format = c("italic"),
+           fixed_small_size = T
+           )
 
 ```
-
+The estimates produced are as displayed in the table above. There are some interesting items to note about this output. All are statistically significant at a 95% level, except for the Quadratic Interaction in Panel B. All estimates of the effect of having BAC over the DUI threshold are negative. All of these estimates also control for gender, race, age and the accident level. These estimates can be interpreted as follows: the effect of having a BAC level above the DUI cutoff of 0.08 decreases recidivism by about 2 percentage points at both bandwidth levels and when a linear interaction is included in the estimation.  However, the estimate decreases slightly and the p-values increase slightly when the quadratic interaction is included. This can be conceptualized to mean that those with a BAC at or above the DUI threshold are less likely to have another pull over for drunk driving in the next few years, so the likeliness of recidivism goes down. This would speak to the effectiveness of the policy at reducing instances of drunk driving.  
 
 ## Question 8
+
+The following visualization was created with STATA with two different commands for two different visualization types. The first uses the cmogram and the second rdplot. Note the cmogram command did not allow for cutting off the data at the 0.15 high level but the rdplot did allow for this. These are both plotted linearly and quadratically These plot recidivism as the dependent with respect to the running variable of BAC level and can be analyzed at the 0.08 cutoff. The figures below display a distinguishable drop in recidivism at the 0.08 BAC level. This is a similar conclusion to Hansen's paper. This aligns with the conclusions and interpretation of the Table 3 estimates in Question 7. The policy is showing an reduction on recidivism of drunk driving. 
 ```{stata, evaluate = FALSE}
 cmogram recidivism bac1, cut(0.08) scatter line(0.08) qfitci title("BAC and Recidivism Quadratic")
 **Figure19.gph
@@ -327,9 +325,6 @@ graph combine Figure21 Figure22
 ![BAC and Recidivism (Panel A)](Figures/Basic.png)
 ![BAC and Recidivism (Panel A)](Figures/Basic2.png)
 
-There are two provided options in STATA for visualizing these figures. The top, which uses the cmogram command, but can not be cutoff at the 0.15 point, and then
-
 ## Question 9
-
-
+The purpose of this exercise was to recreate the question and estimation design used by Hansen in his 2015 paper. The overall hypothesis tested was related to the effectiveness of the punishment of a DUI policy.  Although he looks at further items, this replication focuses on the effect of recidivism at the threshold of the DUI. The thought is that these sanctions or negative results of having getting a DUI or being at a BAC level cutoff of 0.08 would reduce the future repeated behavior. It is really examining the effectiveness of a policy on deterrence. The hope is that these policies would be effective. The results of this estimation is that receiving a DUI does have a deterrence effect on individuals. The replication results produced confirm the results estimated by Hansen and agree with his conclusions. The results of this estimation design are extremely informative and interesting. Reflecting on the processes and the process of the design, these conclusions appear sound and reliable.  
 
