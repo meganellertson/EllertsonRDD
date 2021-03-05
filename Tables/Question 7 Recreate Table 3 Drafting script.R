@@ -99,13 +99,13 @@ RDD7a <- RDDdata %>%
   mutate(bac7 = bac1 - 0.08,
          dui7 = ifelse(bac7 >= 0, 1, 0),
          bacsq7 = bac7^2) %>%
-  filter(bac7>=0.03 & bac7<=0.13)
+  filter(bac7>=-0.05 & bac7<=0.05)
 ## CHANGE FILTER
 RDD7b <-RDDdata %>%
   mutate(bac7 = bac1 - 0.08,
          dui7 = ifelse(bac7 >= 0, 1, 0),
          bacsq7 = bac7^2) %>%
-  filter(bac7>=0.055 & bac7<=0.105)
+  filter(bac7>=-0.025 & bac7<=0.025)
 ## CHANGE FILTER
 
 weightsa <- rdd::kernelwts(RDD7a$bac7, center = 0, bw = 0.05, kernel = "rectangular")

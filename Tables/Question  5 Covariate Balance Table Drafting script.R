@@ -1,5 +1,6 @@
 ## Question 5: Covariate Balance
 
+rdplotdensity(density, RDDdata$bac1)
 ##  RDestimate option, issue is there is no SE 
 malecov <- RDestimate(formula = male ~ bac1 | aged + acc + white + dui + bac1*dui, data = RDDdata, cutpoint = 0.08, bw = 0.05, kernel = "rectangular", se.type = "HC1")
 cov1 <- lm_robust(male ~ bac1 + aged + acc + white + dui + dui*bac1, data = RDDdata, se_type = "HC1")
