@@ -89,5 +89,14 @@ t2[[2]] <- whitecov
 t2[[3]] <- agecov
 t2[[4]] <- acccov
 stargazer(t2, type = "text")
+rdrobust male bac1, c(0.08) h(0.05) kernel("uniform")
+estimates store Male, title(Male)
+rdrobust white bac1, c(0.08) h(0.05) kernel("uniform")
+estimates store White, title(White)
+rdrobust aged bac1, c(0.08) h(0.05) kernel("uniform")
+estimates store Age, title(Age)
+rdrobust acc bac1, c(0.08) h(0.05) kernel("uniform")
+estimates store Accident, title(Accident)
 
+estout Male White Age Accident, cells(b(star fmt(4)) se(par fmt(4))) stats(N, labels(N)) label legend varlabels(RD_Estimate "Panel A DUI Threshold")
 stargazer(malecov, whitecov, agecov, acccov, title = "Covariate Balance", align=TRUE)

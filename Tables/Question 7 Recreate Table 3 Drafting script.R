@@ -135,3 +135,32 @@ C3PB <- lm(recidivism ~ dui7*(bac7 + bacsq7) + aged + white + male + acc,
            data = RDD7b,
            weights = weightsb)
 lmtest::coeftest(C3PB, vcov = sandwich::vcovHC(C3PB))
+##Table formatting 
+C1PA$coefficients[3]
+C1PA$std.error[3]
+C1PA$p.value[3]
+C2PA$coefficients[3]
+C2PA$std.error[3]
+C2PA$p.value[3]
+C3PA$coefficients[2]
+C3PA$std.error[2]
+C3PA$p.value[2]
+C1PB$coefficients[3]
+C1PB$std.error[3]
+C1PB$p.value[3]
+C2PB$coefficients[3]
+C2PB$std.error[3]
+C2PB$p.value[3]
+C3PB$coefficients[2] 
+C3PB$std.error[2] 
+C3PA$p.value[2]
+
+
+star.1 <- stargazer(linear.1, linear.2, probit.model,
+                    title="Title: Regression Results",
+                    align=TRUE,
+                    type = "html",
+                    style = "ajs", # "ajs"
+                    notes="this is a test note"
+)
+kable(star.1)
