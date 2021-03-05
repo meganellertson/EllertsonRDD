@@ -102,7 +102,12 @@ sumstat %>%
   digits = 2,
   caption = "Summary Statistics Table"
 ) %>%
-  kable_classic(full_width = F, html_font = "Cambria")
+  kable_classic(full_width = F, html_font = "Cambria") %>%
+  footnote(general = "The summary statistics above are provided for the relevant variables for this replication.",
+           footnote_as_chunk = T, 
+           title_format = c("italic"),
+           fixed_small_size = T
+           )
 ```
 The table above shows that many of the variables of concern are binary and take the value of either 0 or 1. The data only looks at individuals of a legal drinking age, 21 and the highest age of 80. Much of the individuals pulled over for drunk driving are white with a mean of 0.84 and are usually men. The maximum BAC level reported in the data set is 0.45, which is much higher than even the aggravated BAC level. 
 
@@ -169,13 +174,18 @@ CovBal %>%
     col.names = c("Characteristic", "Male", "White", 
                 "Age", "Accident"),
   digits = 3,
-  caption = "Covariate Balance Panel A Only"
+  caption = "Table 2: Covariate Balance Panel A Only"
 ) %>%
-  kable_classic(full_width = F, html_font = "Cambria")
+ kable_classic(full_width = F, html_font = "Cambria") %>%
+  footnote(general = "The table above provides the covariate balance estimation. This includes using the RDestimate command to regress the characteristic onto the BAC level controlling for the original estiamtion equation. This utilizes rectagular kernels and bandwiths of 0.05. The P-values outputed display the signficance levels for the estimate",
+           footnote_as_chunk = T, 
+           title_format = c("italic"),
+           fixed_small_size = T
+           )
 
 
 ```
-Although slightly different than Hansen's paper, but this output provides the same lack of statistical significance. This means that there is a failure to reject the null hypothesis that the characteristics are unrelated to the cutoff. This is somewhat of an issue for the overall RDD estimation. This means there are individual effects from the characteristics impacting the jumping behavior at the BAC cutoff on their own, with could cause misinterpretation of cutoff discontinuity estimation while focusing on recidivism. Question 6 allows for further exploration into the visualization of these characteristics. The estimates can be interpreted as follows: the effect of being male on 
+Although slightly different than Hansen's paper, but this output provides the same lack of statistical significance. This means that there is a failure to reject the null hypothesis that the characteristics are unrelated to the cutoff. This is somewhat of an issue for the overall RDD estimation. This means there are individual effects from the characteristics impacting the jumping behavior at the BAC cutoff on their own, with could cause misinterpretation of cutoff discontinuity estimation while focusing on recidivism. Question 6 allows for further exploration into the visualization of these characteristics. Display that there are very small estimated effects, which are not statistically significant therefore, it can be concluded that these characteristics are smooth enough across the DUI threshold to ensure the necessary conditions of the RDD estimates for the recidivism estimation. This is confirmed by the visually smooth figures provided in Question 6. 
 
 ## Question 6
 
@@ -326,5 +336,8 @@ graph combine Figure21 Figure22
 ![BAC and Recidivism (Panel A)](Figures/Basic2.png)
 
 ## Question 9
-The purpose of this exercise was to recreate the question and estimation design used by Hansen in his 2015 paper. The overall hypothesis tested was related to the effectiveness of the punishment of a DUI policy.  Although he looks at further items, this replication focuses on the effect of recidivism at the threshold of the DUI. The thought is that these sanctions or negative results of having getting a DUI or being at a BAC level cutoff of 0.08 would reduce the future repeated behavior. It is really examining the effectiveness of a policy on deterrence. The hope is that these policies would be effective. The results of this estimation is that receiving a DUI does have a deterrence effect on individuals. The replication results produced confirm the results estimated by Hansen and agree with his conclusions. The results of this estimation design are extremely informative and interesting. Reflecting on the processes and the process of the design, these conclusions appear sound and reliable.  
+The purpose of this exercise was to recreate the question and estimation design used by Hansen in his 2015 paper. The overall hypothesis tested was related to the effectiveness of the punishment of a DUI policy.  Although he looks at further items, this replication focuses on the causal effect of DUI cutoff on recidivism. The thought is that these sanctions or negative results of having getting a DUI or being at a BAC level cutoff of 0.08 or above would reduce the future repeated behavior. It is really examining the effectiveness of a policy on deterrence. The hope is that these policies would be effective. The results of this estimation is that receiving a DUI does have a deterrence effect on individuals. The replication results produced confirm the results estimated by Hansen and agree with his conclusions. The results of this estimation design are extremely informative and interesting. Reflecting on the processes and the process of the design, these conclusions appear sound and reliable. The results of the RDD method and the paper are convincing. The estimate produced in Table 3 specifically important and provide a statistically significant result on the effect of the cutoff on recidivism.  The figures and graphs help to communicate this result through the visualized cutoff which exists for recidivism, as displayed in Question 9. An important assumption of the RDD method is that the covariates or the control variables included, in this case the characteristic variables are continuous at the cutoff, thus ensuring the causal effect can be drawn from the treatment and not the other characteristics. The output in Hansen's paper and in this replication get that the continuity of these characteristics is fairly smooth there is small evidence of a potential small break but it is not statistically significant. Additionally, the RDD method rides on an assumption that the assignment at the threshold is essentially random, meaning people would not be able to choose to remain right below the cutoff or select into the cutoff. As discussed when completing the density tests in the earlier portion of this replication, the evidence of this occurring is very low, which makes logical sense.  People would have a very difficult time controlling if they were right at 0.0799 BAC so that they do not get the treatment.  Overall, these assumptions for a convincing RDD estimate do hold, and thus make the results in this replication and Hansen's paper convincing. 
+
+## What I learned
+This replication helped me to not only understand the mechanics of  Regression Discontinuity Design, but also I have gained a significant amount of technical skills. Prior to this assignment I was very unfamiliar with R, git, github, and markdown formats. Given I also completed this work in STATA, I also worked with commands I was unfamiliar with in that software. Going through the processes of replication and working through the underlying code, especially in R, gave me a more concrete understanding of the processes happening in the estimation method. The most integral aspect was the visualizations which assisted in my understanding of how RDD works and when it is appropriate. RDD seems to be an effective method when understanding the effects of specific policies and types of cutoffs. Specifically analyzing the localized effect appears to be important in many different context. 
 
