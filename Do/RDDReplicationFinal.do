@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ## Do File RDD Replication STATA 
 # Set up directory, data and necessary packages 
 cd "C:\Users\meganDocuments\UT\Spring 2021\Casual Inference\Replications\RDD Replication Stata"
