@@ -176,7 +176,7 @@ CovBal = data.frame(
 
 CovBal %>%
   kable(
-  col.names = c("Characteristic", "Male", "White", 
+    col.names = c("Characteristic", "Male", "White", 
                 "Age", "Accident"),
   digits = 3,
   caption = "Covariate Balance Panel A Only"
@@ -248,59 +248,61 @@ RDD7b <-RDDdata %>%
 
 weightsa <- rdd::kernelwts(RDD7a$bac7, center = 0, bw = 0.05, kernel = "rectangular")
 weightsb <- rdd::kernelwts(RDD7b$bac7, center = 0, bw = 0.05, kernel = "rectangular")
-C1PA <- lm(recidivism ~ bac7 + dui7 + aged + white + male + acc, 
+C1PA <- lm_robust(recidivism ~ bac7 + dui7 + aged + 
+                    white + male + acc, 
            data = RDD7a,
            weights = weightsa)
-lmtest::coeftest(C1PA, vcov = sandwich::vcovHC(C1PA))
-C2PA <- lm(recidivism ~ bac7*dui7 + aged + white + male + acc, 
-           data = RDD7a,
-           weights = weightsa)
-lmtest::coeftest(C2PA, vcov = sandwich::vcovHC(C2PA))
-C3PA <- lm(recidivism ~ dui7*(bac7 + bacsq7) + aged + white + male + acc, 
-           data = RDD7a,
-           weights = weightsa)
-lmtest::coeftest(C3PA, vcov = sandwich::vcovHC(C3PA))
 
-C1PB <- lm(recidivism ~ bac7 + dui7 + aged + white + male + acc, 
+C2PA <- lm_robust(recidivism ~ bac7*dui7 + aged + 
+                    white + male + acc, 
+           data = RDD7a,
+           weights = weightsa)
+
+C3PA <- lm_robust(recidivism ~ dui7*(bac7 + bacsq7) + aged +
+                    white + male + acc, 
+           data = RDD7a,
+           weights = weightsa)
+
+C1PB <- lm_robust(recidivism ~ bac7 + dui7 + aged + white + 
+                    male + acc, 
            data = RDD7b,
            weights = weightsb)
-lmtest::coeftest(C1PB, vcov = sandwich::vcovHC(C1PB))
+
 C2PB <- lm_robust(recidivism ~ bac7*dui7 + aged + white + male +
                     acc, 
            data = RDD7b,
            weights = weightsb)
-lmtest::coeftest(C2PB, vcov = sandwich::vcovHC(C2PB))
 
-C3PB <- lm_robust(recidivism ~ dui7*(bac7 + bacsq7) + aged + white + male + acc, 
+
+C3PB <- lm_robust(recidivism ~ dui7*(bac7 + bacsq7) + aged + 
+                    white + male + acc, 
            data = RDD7b,
            weights = weightsb)
-lmtest::coeftest(C3PB, vcov = sandwich::vcovHC(C3PB))
 
-##Table formatting 
-C3PB$est[]
-CovBal = data.frame(
-  Estimates = c("Coeff", "SE", "Z", "P-Value", 
-                "Confidence Interval"),
-  m = c(malecov$est[1], malecov$se[1], malecov$z[1],
-        malecov$p[1], malecov$ci[1]),
-  w = c(whitecov$est[1], whitecov$se[1], whitecov$z[1],
-        whitecov$p[1], whitecov$ci[1]),
-  ag = c(agecov$est[1], agecov$se[1], agecov$z[1],
-         agecov$p[1], agecov$ci[1]),
-  acc = c(acccov$est[1], acccov$se[1], acccov$z[1],
-          acccov$p[1], acccov$ci[1])
+Esttab = data.frame(
+  Estimates = c("Panel A", "StErrs", "pvalue",
+                "Panel B", "StErrs", "pvalue"),
+  Condition1 = c(C1PA$coefficients[3], C1PA$std.error[3], 
+                 C1PA$p.value[3],C1PB$coefficients[3], 
+                 C1PB$std.error[3], C2PB$p.value[3]),
+  Condition2 = c(C2PA$coefficients[3], C2PA$std.error[3],
+                 C2PA$p.value[3],C2PB$coefficients[3],
+                 C2PB$std.error[3], C2PB$p.value[3]),
+  Condition3 = c(C3PA$coefficients[2], C3PA$std.error[2], 
+                 C3PA$p.value[2], C3PB$coefficients[2], 
+                 C3PB$std.error[2], C3PB$p.value[2])
 )
-
-CovBal %>%
+Esttab %>%
   kable(
-  col.names = c("Characteristic", "Male", "White", 
-                "Age", "Accident"),
+  col.names = c("Panels", "Condition 1", "Condition 2", 
+               "Condition 3"),
   digits = 3,
-  caption = "Covariate Balance Panel A Only"
+  caption = "Table 3: Regression Discontinuity Estimates for the Effect of Exceeding the 0.08 bac Threshold on Recidivism"
 ) %>%
   kable_classic(full_width = F, html_font = "Cambria")
 
 ```
+
 
 ## Question 8
 ```{stata, evaluate = FALSE}
