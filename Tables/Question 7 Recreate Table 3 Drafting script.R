@@ -91,3 +91,47 @@ ggplot(plottingdata, aes(bac1, recidivism)) +
   geom_point(aes(x=bac1, y = recidivism), data = agg_RDDdata) +
   stat_smooth(aes(bac1, recidivism, group = gg_group), method = "lm") +
   geom_vline(xintercept = 0.08)
+
+##
+library(rdd)
+
+RDD7a <- RDDdata %>%
+  mutate(bac7 = bac1 - 0.08,
+         dui7 = ifelse(bac7 >= 0, 1, 0),
+         bacsq7 = bac7^2) %>%
+  filter(bac7>=0.03 & bac7<=0.13)
+## CHANGE FILTER
+RDD7b <-RDDdata %>%
+  mutate(bac7 = bac1 - 0.08,
+         dui7 = ifelse(bac7 >= 0, 1, 0),
+         bacsq7 = bac7^2) %>%
+  filter(bac7>=0.055 & bac7<=0.105)
+## CHANGE FILTER
+
+weightsa <- rdd::kernelwts(RDD7a$bac7, center = 0, bw = 0.05, kernel = "rectangular")
+weightsb <- rdd::kernelwts(RDD7b$bac7, center = 0, bw = 0.05, kernel = "rectangular")
+C1PA <- lm(recidivism ~ bac7 + dui7 + aged + white + male + acc, 
+           data = RDD7a,
+           weights = weightsa)
+lmtest::coeftest(C1PA, vcov = sandwich::vcovHC(C1PA))
+C2PA <- lm(recidivism ~ bac7*dui7 + aged + white + male + acc, 
+           data = RDD7a,
+           weights = weightsa)
+lmtest::coeftest(C2PA, vcov = sandwich::vcovHC(C2PA))
+C3PA <- lm(recidivism ~ dui7*(bac7 + bacsq7) + aged + white + male + acc, 
+           data = RDD7a,
+           weights = weightsa)
+lmtest::coeftest(C3PA, vcov = sandwich::vcovHC(C3PA))
+
+C1PB <- lm(recidivism ~ bac7 + dui7 + aged + white + male + acc, 
+           data = RDD7b,
+           weights = weightsb)
+lmtest::coeftest(C1PB, vcov = sandwich::vcovHC(C1PB))
+C2PB <- lm(recidivism ~ bac7*dui7 + aged + white + male + acc, 
+           data = RDD7b,
+           weights = weightsb)
+lmtest::coeftest(C2PB, vcov = sandwich::vcovHC(C2PB))
+C3PB <- lm(recidivism ~ dui7*(bac7 + bacsq7) + aged + white + male + acc, 
+           data = RDD7b,
+           weights = weightsb)
+lmtest::coeftest(C3PB, vcov = sandwich::vcovHC(C3PB))
